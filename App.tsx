@@ -319,9 +319,7 @@ const App: React.FC = () => {
 
           <div className="pt-10 border-t border-white/5 flex flex-col lg:flex-row items-center justify-between gap-6">
             <div className="text-[10px] text-gray-600 font-bold uppercase tracking-[0.4em] flex items-center gap-4">
-              <span>© 2026 ARGUS AI (TORONTO) INC.</span>
-              <span className="hidden md:block w-1 h-1 bg-gray-800 rounded-full" />
-              <span>LICENSED TO BARRY COHEN GROUP</span>
+              <span>© 2026 ARGUS ELITE. ALL RIGHTS RESERVED.</span>
             </div>
             <div className="flex items-center gap-8 text-[11px] font-black text-gray-400 uppercase tracking-widest">
               <div className="flex items-center gap-2">
