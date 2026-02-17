@@ -1,0 +1,7 @@
+{
+  "name": "ARGUS Sales Closer",
+  "description": "A luxury real estate SaaS dashboard for elite teams, focusing on GCI protection and AI-driven lead qualification.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
