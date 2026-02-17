@@ -336,7 +336,8 @@ const App: React.FC = () => {
 
         {renderActiveView()}
 
-        <footer className="mt-20 pt-16 pb-12 border-t border-white/10 bg-[#020202]">
+        {/* Updated footer with lighter background and bright white text */}
+        <footer className="mt-20 pt-16 pb-12 border-t border-white/10 bg-[#0c0c0c] transition-colors duration-500">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 mb-16">
             <div className="lg:col-span-2">
               <div className="flex items-center gap-3 mb-6">
@@ -345,7 +346,7 @@ const App: React.FC = () => {
                 </div>
                 <h2 className="text-2xl font-bold text-white tracking-tighter">ARGUS Sales Closer</h2>
               </div>
-              <p className="text-white/60 text-sm leading-relaxed max-w-sm font-bold">
+              <p className="text-white text-sm leading-relaxed max-w-sm font-bold">
                 The premier AI-driven GCI protection suite for elite Toronto real estate professionals. ARGUS intercepts, qualifies, and converts missed opportunities into multi-million dollar closings.
               </p>
               <div className="mt-8 flex gap-4">
@@ -359,12 +360,12 @@ const App: React.FC = () => {
               <h4 className="text-white font-black text-xs uppercase tracking-[0.3em] mb-6 flex items-center gap-2">
                 <Building2 size={14} className="text-[#d4af37]" /> Enclaves
               </h4>
-              <ul className="space-y-4 text-sm font-bold text-white/40">
-                <li><a href="#" className="hover:text-white transition-colors">Yorkville Mastery</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">The Bridle Path</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Forest Hill South</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Rosedale Valley</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">The Annex Collection</a></li>
+              <ul className="space-y-4 text-sm font-bold text-white">
+                <li><a href="#" className="hover:text-[#d4af37] transition-colors">Yorkville Mastery</a></li>
+                <li><a href="#" className="hover:text-[#d4af37] transition-colors">The Bridle Path</a></li>
+                <li><a href="#" className="hover:text-[#d4af37] transition-colors">Forest Hill South</a></li>
+                <li><a href="#" className="hover:text-[#d4af37] transition-colors">Rosedale Valley</a></li>
+                <li><a href="#" className="hover:text-[#d4af37] transition-colors">The Annex Collection</a></li>
               </ul>
             </div>
 
@@ -372,12 +373,12 @@ const App: React.FC = () => {
               <h4 className="text-white font-black text-xs uppercase tracking-[0.3em] mb-6 flex items-center gap-2">
                 <Scale size={14} className="text-[#d4af37]" /> Governance
               </h4>
-              <ul className="space-y-4 text-sm font-bold text-white/40">
-                <li><a href="#" className="hover:text-white transition-colors">Privacy Accord</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Terms of Engagement</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Cookie Mandate</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">DMCA Compliance</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Anti-SPAM Policy</a></li>
+              <ul className="space-y-4 text-sm font-bold text-white">
+                <li><a href="#" className="hover:text-[#d4af37] transition-colors">Privacy Accord</a></li>
+                <li><a href="#" className="hover:text-[#d4af37] transition-colors">Terms of Engagement</a></li>
+                <li><a href="#" className="hover:text-[#d4af37] transition-colors">Cookie Mandate</a></li>
+                <li><a href="#" className="hover:text-[#d4af37] transition-colors">DMCA Compliance</a></li>
+                <li><a href="#" className="hover:text-[#d4af37] transition-colors">Anti-SPAM Policy</a></li>
               </ul>
             </div>
 
@@ -385,21 +386,21 @@ const App: React.FC = () => {
               <h4 className="text-white font-black text-xs uppercase tracking-[0.3em] mb-6 flex items-center gap-2">
                 <Activity size={14} className="text-[#d4af37]" /> Ecosystem
               </h4>
-              <ul className="space-y-4 text-sm font-bold text-white/40">
-                <li><a href="#" className="hover:text-white transition-colors">GCI Protection Dashboard</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">MCTB Efficiency Lab</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">FUB Elite Sync</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">API Documentation</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Security Audit 2026</a></li>
+              <ul className="space-y-4 text-sm font-bold text-white">
+                <li><a href="#" className="hover:text-[#d4af37] transition-colors">GCI Protection Dashboard</a></li>
+                <li><a href="#" className="hover:text-[#d4af37] transition-colors">MCTB Efficiency Lab</a></li>
+                <li><a href="#" className="hover:text-[#d4af37] transition-colors">FUB Elite Sync</a></li>
+                <li><a href="#" className="hover:text-[#d4af37] transition-colors">API Documentation</a></li>
+                <li><a href="#" className="hover:text-[#d4af37] transition-colors">Security Audit 2026</a></li>
               </ul>
             </div>
           </div>
 
           <div className="pt-10 border-t border-white/5 flex flex-col lg:flex-row items-center justify-between gap-6">
-            <div className="text-[10px] text-white/30 font-black uppercase tracking-[0.4em] flex items-center gap-4">
+            <div className="text-[10px] text-white font-black uppercase tracking-[0.4em] flex items-center gap-4">
               <span>© 2026 ARGUS ELITE. ALL RIGHTS RESERVED.</span>
             </div>
-            <div className="flex items-center gap-8 text-[11px] font-black text-white/40 uppercase tracking-widest">
+            <div className="flex items-center gap-8 text-[11px] font-black text-white uppercase tracking-widest">
               <div className="flex items-center gap-2">
                 <ShieldCheck size={14} className="text-emerald-500" />
                 PCI-DSS LEVEL 1 COMPLIANT
@@ -409,8 +410,8 @@ const App: React.FC = () => {
                 SYSTEMS OPERATIONAL
               </div>
             </div>
-            <div className="flex items-center gap-2 text-[10px] text-white/20 font-black uppercase tracking-widest">
-              TOP 1% ELITE INTERFACE
+            <div className="flex items-center gap-2 text-[10px] text-white font-black uppercase tracking-widest">
+              DESIGNED FOR THE TOP 1% OF REAL ESTATE PROFESSIONALS
             </div>
           </div>
         </footer>
