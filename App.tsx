@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Search, Bell, Map as MapIcon, ChevronRight, Activity, Zap, Shield, Info, ExternalLink, ShieldCheck, Landmark, Building2, Scale, Lock } from 'lucide-react';
+import { Search, Bell, Map as MapIcon, ChevronRight, Activity, Zap, Shield, ShieldCheck, Landmark, Building2, Scale, Lock, Clock } from 'lucide-react';
 import Sidebar from './components/Sidebar';
 import LeadDetail from './components/LeadDetail';
 import { Lead, Stats, ViewState } from './types';
@@ -13,17 +13,21 @@ const MOCK_LEADS: Lead[] = [
   { id: '4', name: 'Sarah Jenkins', propertyType: 'Condo', sentiment: 'Cold', lastMessage: 'Just browsing at the moment, thanks.', timeAgo: '1h ago', qualificationScore: 45, caslVerified: true, phone: '+1 (416) 555-0988', email: 'sarah.j@outlook.com' },
 ];
 
-const MOCK_STATS: Stats = {
-  gciProtected: '$1,420,000+',
-  activeConversations: 47,
-  responseSpeed: '6.2s',
-  mctbEfficiency: 98.4
-};
-
 const App: React.FC = () => {
   const [activeView, setActiveView] = useState<ViewState>(ViewState.INSIGHTS);
   const [selectedLead, setSelectedLead] = useState<Lead | null>(MOCK_LEADS[0]);
   const [territoryBriefing, setTerritoryBriefing] = useState<string>("Loading elite market insights...");
+  
+  // Dynamic stats state for real-time simulation
+  const [stats, setStats] = useState<Stats>({
+    gciProtected: '$1,420,000+',
+    activeConversations: 47,
+    responseSpeed: '6.2s',
+    mctbEfficiency: 98.4
+  });
+
+  // Base values for simulation logic
+  const [gciBase, setGciBase] = useState(1420000);
 
   useEffect(() => {
     const fetchBriefing = async () => {
@@ -31,7 +35,33 @@ const App: React.FC = () => {
       setTerritoryBriefing(briefing);
     };
     fetchBriefing();
-  }, []);
+
+    // Stats simulation interval
+    const statsInterval = setInterval(() => {
+      setStats(prev => {
+        // Randomly fluctuate active conversations
+        const convChange = Math.random() > 0.7 ? (Math.random() > 0.5 ? 1 : -1) : 0;
+        const newConversations = Math.max(40, Math.min(60, prev.activeConversations + convChange));
+        
+        // Slightly fluctuate response speed (simulating jitter)
+        const speedFloat = parseFloat(prev.responseSpeed);
+        const newSpeed = (speedFloat + (Math.random() * 0.2 - 0.1)).toFixed(1);
+        
+        // Increment GCI base slightly (simulating value protection)
+        const gciIncrement = Math.random() > 0.5 ? Math.floor(Math.random() * 500) : 0;
+        setGciBase(old => old + gciIncrement);
+
+        return {
+          ...prev,
+          activeConversations: newConversations,
+          responseSpeed: `${newSpeed}s`,
+          gciProtected: `$${(gciBase + gciIncrement).toLocaleString()}+`
+        };
+      });
+    }, 3000);
+
+    return () => clearInterval(statsInterval);
+  }, [gciBase]);
 
   const handleLogout = () => {
     alert("Logging out from premium session.");
@@ -55,15 +85,16 @@ const App: React.FC = () => {
     <div className="min-h-screen relative overflow-hidden bg-[#020202]">
       {/* Background Image with Layered Gradients */}
       <div 
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-30 mix-blend-overlay"
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-30 mix-blend-overlay pointer-events-none"
         style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1574362848149-11496d93a7c7?auto=format&fit=crop&q=80&w=2000)' }}
       />
-      <div className="absolute inset-0 bg-gradient-to-br from-[#050505] via-transparent to-black" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(212,175,55,0.06),_transparent_50%)]" />
+      <div className="absolute inset-0 bg-gradient-to-br from-[#050505] via-transparent to-black pointer-events-none" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(212,175,55,0.06),_transparent_50%)] pointer-events-none" />
 
       <Sidebar activeView={activeView} onViewChange={setActiveView} onLogout={handleLogout} />
 
-      <main className="relative pl-20 pr-8 pt-8 min-h-screen max-w-[1600px] mx-auto transition-all duration-500">
+      {/* Increased padding-left from pl-20 to pl-32 to fix word clipping issue against fixed sidebar */}
+      <main className="relative pl-32 pr-8 pt-8 min-h-screen max-w-[1600px] mx-auto transition-all duration-500">
         
         {/* Header Section */}
         <header className="flex items-center justify-between mb-10">
@@ -117,7 +148,7 @@ const App: React.FC = () => {
                   <span className="text-[11px] text-emerald-400 font-black bg-emerald-400/10 px-2 py-0.5 rounded border border-emerald-400/20">+12% vs LY</span>
                 </div>
                 <p className="text-[11px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1">GCI Protected</p>
-                <h2 className="text-4xl font-luxury font-bold text-white tracking-tighter">{MOCK_STATS.gciProtected}</h2>
+                <h2 className="text-4xl font-luxury font-bold text-white tracking-tighter transition-all duration-700">{stats.gciProtected}</h2>
               </div>
 
               <div className="glass p-7 rounded-3xl border-white/10 group hover:border-blue-400/40 transition-all shadow-xl">
@@ -126,11 +157,11 @@ const App: React.FC = () => {
                     <Activity size={22} />
                   </div>
                   <div className="flex gap-1.5 items-center">
-                    {[1, 2, 3, 4, 5].map(i => <div key={i} className={`w-1.5 h-4 rounded-full transition-all ${i < 4 ? 'bg-blue-400 shadow-[0_0_8px_rgba(96,165,250,0.5)]' : 'bg-white/10'}`} />)}
+                    {[1, 2, 3, 4, 5].map(i => <div key={i} className={`w-1.5 h-4 rounded-full transition-all duration-500 ${i < (stats.activeConversations / 12) ? 'bg-blue-400 shadow-[0_0_8px_rgba(96,165,250,0.5)]' : 'bg-white/10'}`} />)}
                   </div>
                 </div>
                 <p className="text-[11px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1">Live Encounters</p>
-                <h2 className="text-4xl font-luxury font-bold text-white tracking-tighter">{MOCK_STATS.activeConversations}</h2>
+                <h2 className="text-4xl font-luxury font-bold text-white tracking-tighter transition-all duration-700">{stats.activeConversations}</h2>
               </div>
 
               <div className="glass p-7 rounded-3xl border-white/10 group hover:border-emerald-400/40 transition-all shadow-xl">
@@ -144,7 +175,7 @@ const App: React.FC = () => {
                   </div>
                 </div>
                 <p className="text-[11px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1">Response Latency</p>
-                <h2 className="text-4xl font-luxury font-bold text-white tracking-tighter">{MOCK_STATS.responseSpeed}</h2>
+                <h2 className="text-4xl font-luxury font-bold text-white tracking-tighter transition-all duration-700">{stats.responseSpeed}</h2>
               </div>
             </div>
 
