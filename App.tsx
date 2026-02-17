@@ -90,9 +90,14 @@ const App: React.FC = () => {
                   <div className="flex items-center gap-2 mb-1">
                     <p className="text-[11px] font-black text-gray-400 uppercase tracking-[0.2em]">GCI Protected</p>
                     <div className="group/tooltip relative">
-                      <Info size={12} className="text-gray-500 cursor-help" />
-                      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 p-2 bg-black border border-white/10 rounded-lg text-[10px] text-white opacity-0 group-hover/tooltip:opacity-100 transition-opacity pointer-events-none z-50 shadow-2xl">
-                        Gross Commission Income: The total revenue generated from closed sales before expenses.
+                      <div className="p-1 cursor-help hover:bg-white/10 rounded-full transition-colors">
+                        <Info size={14} className="text-[#d4af37]" />
+                      </div>
+                      <div className="absolute bottom-full left-0 mb-3 w-64 p-4 bg-[#0a0a0a] border border-[#d4af37]/30 rounded-2xl text-[11px] text-white opacity-0 group-hover/tooltip:opacity-100 transition-all duration-300 pointer-events-none z-50 shadow-[0_10px_40px_rgba(0,0,0,0.8)] border-t-[#d4af37]">
+                        <p className="font-black text-[#d4af37] uppercase tracking-widest mb-2 border-b border-white/10 pb-1">Asset Intelligence</p>
+                        <p className="leading-relaxed font-medium">
+                          <strong className="text-white">Gross Commission Income (GCI)</strong> represents the total revenue your team has successfully shielded from abandonment. It is the lifeblood of elite operations, tracking every dollar saved by ARGUS's sub-6s interception protocol.
+                        </p>
                       </div>
                     </div>
                   </div>

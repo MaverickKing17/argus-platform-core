@@ -1,7 +1,8 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Phone, Mail, CheckCircle, ExternalLink, ShieldCheck, Share2, RefreshCw, AlertCircle, Clock } from 'lucide-react';
+import { Phone, Mail, CheckCircle, ExternalLink, ShieldCheck, Share2, RefreshCw, AlertCircle, Clock, Zap, Cpu, Target } from 'lucide-react';
 import { Lead } from '../types';
+import { analyzeLeadSentiment } from '../services/geminiService';
 
 interface LeadDetailProps {
   lead: Lead | null;
@@ -12,18 +13,44 @@ type SyncStatus = 'syncing' | 'synced' | 'error' | 'idle';
 const LeadDetail: React.FC<LeadDetailProps> = ({ lead }) => {
   const [syncStatus, setSyncStatus] = useState<SyncStatus>('idle');
   const [lastSynced, setLastSynced] = useState<string | null>(null);
+  const [qualificationScore, setQualificationScore] = useState<number>(0);
+  const [aiInsights, setAiInsights] = useState<{ summary: string; recommendedAction: string } | null>(null);
+  const [isAnalyzing, setIsAnalyzing] = useState<boolean>(false);
   const syncTimeoutRef = useRef<number | null>(null);
 
   useEffect(() => {
     if (lead) {
       setSyncStatus('idle');
       setLastSynced(null);
+      setQualificationScore(lead.qualificationScore);
+      setAiInsights(null);
+      
       const timeout = window.setTimeout(() => {
         handleSync();
+        performAiDeepScan();
       }, 800);
       return () => window.clearTimeout(timeout);
     }
   }, [lead]);
+
+  const performAiDeepScan = async () => {
+    if (!lead) return;
+    setIsAnalyzing(true);
+    try {
+      const result = await analyzeLeadSentiment(lead.lastMessage);
+      if (result) {
+        setQualificationScore(result.score);
+        setAiInsights({
+          summary: result.summary,
+          recommendedAction: result.recommendedAction
+        });
+      }
+    } catch (err) {
+      console.error("Deep scan failed", err);
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
 
   const handleSync = () => {
     if (syncTimeoutRef.current) window.clearTimeout(syncTimeoutRef.current);
@@ -124,7 +151,15 @@ const LeadDetail: React.FC<LeadDetailProps> = ({ lead }) => {
             </div>
           </div>
 
-          <div className="flex flex-col items-center py-5 bg-[radial-gradient(circle_at_center,_rgba(212,175,55,0.08),_transparent_70%)]">
+          <div className="flex flex-col items-center py-5 bg-[radial-gradient(circle_at_center,_rgba(212,175,55,0.08),_transparent_70%)] relative">
+            {isAnalyzing && (
+              <div className="absolute inset-0 flex items-center justify-center z-20 bg-black/40 backdrop-blur-[2px] rounded-3xl">
+                <div className="flex flex-col items-center gap-2">
+                  <Cpu className="text-[#d4af37] animate-pulse" size={32} />
+                  <span className="text-[9px] font-black text-[#d4af37] uppercase tracking-[0.4em]">Deep AI Scan...</span>
+                </div>
+              </div>
+            )}
             <div className="relative w-48 h-48 flex items-center justify-center">
               <svg className="w-full h-full transform -rotate-90 filter drop-shadow-[0_0_20px_rgba(212,175,55,0.15)]">
                 <circle
@@ -140,13 +175,13 @@ const LeadDetail: React.FC<LeadDetailProps> = ({ lead }) => {
                   stroke="currentColor"
                   strokeWidth="5"
                   strokeDasharray={527}
-                  strokeDashoffset={527 - (527 * lead.qualificationScore) / 100}
+                  strokeDashoffset={527 - (527 * qualificationScore) / 100}
                   strokeLinecap="round"
                   className="text-[#d4af37] transition-all duration-1000 ease-out"
                 />
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="text-5xl font-bold text-white tracking-tighter">{lead.qualificationScore}%</span>
+                <span className="text-5xl font-bold text-white tracking-tighter">{qualificationScore}%</span>
                 <span className="text-[10px] text-[#d4af37] uppercase tracking-[0.4em] font-black mt-1">Qualified</span>
               </div>
             </div>
@@ -155,6 +190,24 @@ const LeadDetail: React.FC<LeadDetailProps> = ({ lead }) => {
               Verified Integrity
             </p>
           </div>
+
+          {aiInsights && (
+            <div className="p-5 bg-[#d4af37]/5 rounded-2xl border border-[#d4af37]/20 space-y-3 animate-fade-in-up">
+              <div className="flex items-center gap-2">
+                <Zap size={14} className="text-[#d4af37]" />
+                <span className="text-[10px] font-black text-[#d4af37] uppercase tracking-widest">Tactical Intelligence</span>
+              </div>
+              <p className="text-xs text-white/80 italic font-medium leading-relaxed">
+                "{aiInsights.summary}"
+              </p>
+              <div className="flex items-start gap-2 pt-2 border-t border-[#d4af37]/10">
+                <Target size={12} className="text-white mt-0.5" />
+                <p className="text-[10px] font-black text-white uppercase tracking-tighter">
+                  Recommendation: <span className="text-[#d4af37]">{aiInsights.recommendedAction}</span>
+                </p>
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="space-y-4">
@@ -206,12 +259,12 @@ const LeadDetail: React.FC<LeadDetailProps> = ({ lead }) => {
               </button>
             )}
             <button 
-              onClick={handleSync}
-              disabled={syncStatus === 'syncing'}
+              onClick={() => { handleSync(); performAiDeepScan(); }}
+              disabled={syncStatus === 'syncing' || isAnalyzing}
               className={`w-12 h-12 rounded-2xl border border-white/10 flex items-center justify-center transition-all duration-500 relative group
-                ${syncStatus === 'syncing' ? 'opacity-50 cursor-not-allowed' : 'hover:bg-white/10 hover:border-[#d4af37]/50 shadow-inner'}`}
+                ${(syncStatus === 'syncing' || isAnalyzing) ? 'opacity-50 cursor-not-allowed' : 'hover:bg-white/10 hover:border-[#d4af37]/50 shadow-inner'}`}
             >
-              <div className={`w-4 h-4 rounded-full ${status.dot} transition-colors duration-500 ${syncStatus === 'syncing' ? 'animate-pulse scale-110 shadow-[0_0_15px_rgba(212,175,55,0.6)]' : 'shadow-[0_0_10px_rgba(0,0,0,0.8)]'}`} />
+              <div className={`w-4 h-4 rounded-full ${status.dot} transition-colors duration-500 ${(syncStatus === 'syncing' || isAnalyzing) ? 'animate-pulse scale-110 shadow-[0_0_15px_rgba(212,175,55,0.6)]' : 'shadow-[0_0_10px_rgba(0,0,0,0.8)]'}`} />
             </button>
           </div>
         </div>
