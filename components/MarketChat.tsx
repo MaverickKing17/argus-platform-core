@@ -1,6 +1,6 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { MessageSquare, X, Send, Bot, User, Sparkles, Shield, ChevronDown, Landmark } from 'lucide-react';
+import { MessageSquare, X, Send, Bot, User, Sparkles, Shield, ChevronDown, Landmark, RefreshCcw } from 'lucide-react';
 import { GoogleGenAI } from "@google/genai";
 
 const SYSTEM_INSTRUCTION = `You are the ARGUS Oracle, a sophisticated AI concierge with absolute mastery over Toronto's luxury property landscape. 
@@ -37,7 +37,7 @@ const MarketChat: React.FC = () => {
     try {
       const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
       const chat = ai.chats.create({
-        model: 'gemini-3-pro-preview',
+        model: 'gemini-3-flash-preview', // Switched to Flash for better quota limits
         config: {
           systemInstruction: SYSTEM_INSTRUCTION,
           temperature: 0.7,
@@ -59,9 +59,14 @@ const MarketChat: React.FC = () => {
           return updated;
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Oracle offline:", error);
-      setMessages(prev => [...prev, { role: 'model', text: "Connection to the Oracle disrupted. Please verify security clearance and try again." }]);
+      const isQuota = error.message?.includes("429") || error.status === 429;
+      const errorText = isQuota 
+        ? "The Oracle is currently at maximum capacity processing global asset data. Tactical intelligence streams will resume shortly. Please retry in a few moments."
+        : "Connection to the Oracle disrupted. Security protocol suggests a manual refresh of the interface.";
+      
+      setMessages(prev => [...prev, { role: 'model', text: errorText }]);
     } finally {
       setIsTyping(false);
     }
