@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Search, Bell, Map as MapIcon, ChevronRight, Activity, Zap, Shield, ShieldCheck, Landmark, Building2, Scale, Lock, Database, Trophy, UserCog, Info, FileText, Fingerprint, BarChart3, Settings2, Globe, Server } from 'lucide-react';
 import Sidebar from './components/Sidebar';
 import LeadDetail from './components/LeadDetail';
+import MarketChat from './components/MarketChat';
 import { Lead, Stats, ViewState } from './types';
 import { generateTerritoryBriefing } from './services/geminiService';
 
@@ -566,6 +567,9 @@ const App: React.FC = () => {
           </div>
         </footer>
       </main>
+
+      {/* ARGUS Oracle: The Live AI Encyclopedia */}
+      <MarketChat />
     </div>
   );
 };
