@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Search, Bell, Map as MapIcon, ChevronRight, Activity, Zap, Shield, ShieldCheck, Landmark, Building2, Scale, Lock, Database, Trophy, UserCog, Info, FileText, Fingerprint, BarChart3, Settings2, Globe, Server } from 'lucide-react';
 import Sidebar from './components/Sidebar';
 import LeadDetail from './components/LeadDetail';
@@ -17,7 +17,7 @@ const MOCK_LEADS: Lead[] = [
 const App: React.FC = () => {
   const [activeView, setActiveView] = useState<ViewState>(ViewState.INSIGHTS);
   const [selectedLead, setSelectedLead] = useState<Lead | null>(MOCK_LEADS[0]);
-  const [territoryBriefing, setTerritoryBriefing] = useState<string>("Loading elite market insights...");
+  const [territoryBriefing, setTerritoryBriefing] = useState<string>("Initializing secure intelligence stream...");
   
   const [stats, setStats] = useState<Stats>({
     gciProtected: '$1,420,000+',
@@ -41,8 +41,12 @@ const App: React.FC = () => {
         const newConversations = Math.max(40, Math.min(60, prev.activeConversations + convChange));
         const speedFloat = parseFloat(prev.responseSpeed);
         const newSpeed = (speedFloat + (Math.random() * 0.2 - 0.1)).toFixed(1);
-        const gciIncrement = Math.random() > 0.5 ? Math.floor(Math.random() * 500) : 0;
-        setGciBase(old => old + gciIncrement);
+        const gciIncrement = Math.random() > 0.5 ? Math.floor(Math.random() * 300) : 0;
+        
+        setGciBase(old => {
+          const updated = old + gciIncrement;
+          return updated;
+        });
 
         return {
           ...prev,
@@ -51,14 +55,19 @@ const App: React.FC = () => {
           gciProtected: `$${(gciBase + gciIncrement).toLocaleString()}+`
         };
       });
-    }, 3000);
+    }, 4000);
 
     return () => clearInterval(statsInterval);
   }, [gciBase]);
 
   const handleLogout = () => {
-    alert("Logging out from premium session.");
+    alert("Terminating elite session. Redirecting to secure login.");
   };
+
+  const handlePlaceholderLink = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    console.log("Tactical link navigation intercepted. Access restricted in demo mode.");
+  }, []);
 
   const SentimentBadge = ({ sentiment }: { sentiment: Lead['sentiment'] }) => {
     const colors = {
@@ -140,7 +149,7 @@ const App: React.FC = () => {
                     <h3 className="text-xl font-bold text-white tracking-tight">Lead Intelligence Core</h3>
                     <p className="text-[10px] text-[#d4af37] uppercase tracking-[0.3em] font-black mt-1">Real-time interaction matrix</p>
                   </div>
-                  <button className="px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-xs font-bold text-white hover:bg-white/10 transition-all flex items-center gap-2">
+                  <button onClick={handlePlaceholderLink} className="px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-xs font-bold text-white hover:bg-white/10 transition-all flex items-center gap-2">
                     View Full Archive <ChevronRight size={14} className="text-[#d4af37]" />
                   </button>
                 </div>
@@ -218,10 +227,10 @@ const App: React.FC = () => {
                     </p>
                   </div>
                   <div className="flex items-center gap-4">
-                    <button className="px-8 py-3 gold-gradient rounded-xl text-black font-black text-xs uppercase tracking-widest shadow-2xl hover:scale-105 transition-all">
+                    <button onClick={handlePlaceholderLink} className="px-8 py-3 gold-gradient rounded-xl text-black font-black text-xs uppercase tracking-widest shadow-2xl hover:scale-105 transition-all">
                       Initialize Mapping
                     </button>
-                    <button className="px-8 py-3 bg-white/5 border border-white/10 rounded-xl text-white font-bold text-xs uppercase tracking-widest hover:bg-white/10 transition-all">
+                    <button onClick={handlePlaceholderLink} className="px-8 py-3 bg-white/5 border border-white/10 rounded-xl text-white font-bold text-xs uppercase tracking-widest hover:bg-white/10 transition-all">
                       Territory Expansion
                     </button>
                   </div>
@@ -263,10 +272,10 @@ const App: React.FC = () => {
                        Only the team principal has the authority to initiate the deep decryption sequence required to access historical sentiment mappings.
                      </p>
                      <div className="flex gap-4">
-                       <button className="px-8 py-3 gold-gradient rounded-xl text-black font-black uppercase text-xs tracking-widest shadow-2xl">
+                       <button onClick={handlePlaceholderLink} className="px-8 py-3 gold-gradient rounded-xl text-black font-black uppercase text-xs tracking-widest shadow-2xl">
                          Initialize Decryption
                        </button>
-                       <button className="px-8 py-3 bg-white/5 border border-white/10 rounded-xl text-white font-bold uppercase text-xs tracking-widest hover:bg-white/10">
+                       <button onClick={handlePlaceholderLink} className="px-8 py-3 bg-white/5 border border-white/10 rounded-xl text-white font-bold uppercase text-xs tracking-widest hover:bg-white/10">
                          Audit Access Logs
                        </button>
                      </div>
@@ -423,7 +432,7 @@ const App: React.FC = () => {
                            <span className={`text-[10px] font-black uppercase tracking-widest ${p.color}`}>{p.status}</span>
                          </div>
                        ))}
-                       <button className="w-full py-4 mt-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-500 font-black uppercase text-xs tracking-widest hover:bg-red-500/20 transition-all">
+                       <button onClick={handlePlaceholderLink} className="w-full py-4 mt-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-500 font-black uppercase text-xs tracking-widest hover:bg-red-500/20 transition-all">
                          Emergency System Wipe
                        </button>
                     </div>
@@ -467,7 +476,7 @@ const App: React.FC = () => {
                 className="bg-transparent border-none outline-none text-sm w-72 placeholder-white/20 text-white font-bold"
               />
             </div>
-            <button className="relative p-2.5 bg-white/5 border border-white/10 rounded-full text-white hover:border-[#d4af37]/50 hover:bg-white/10 transition-all shadow-xl">
+            <button onClick={handlePlaceholderLink} className="relative p-2.5 bg-white/5 border border-white/10 rounded-full text-white hover:border-[#d4af37]/50 hover:bg-white/10 transition-all shadow-xl">
               <Bell size={20} />
               <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-[#d4af37] rounded-full border-2 border-[#020202]" />
             </button>
@@ -487,7 +496,6 @@ const App: React.FC = () => {
 
         {renderActiveView()}
 
-        {/* Updated footer with lighter background and bright white text */}
         <footer className="mt-20 pt-16 pb-12 border-t border-white/10 bg-[#0c0c0c] transition-colors duration-500">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 mb-16">
             <div className="lg:col-span-2">
@@ -512,11 +520,11 @@ const App: React.FC = () => {
                 <Building2 size={14} className="text-[#d4af37]" /> Enclaves
               </h4>
               <ul className="space-y-4 text-sm font-bold text-white">
-                <li><a href="#" className="hover:text-[#d4af37] transition-colors">Yorkville Mastery</a></li>
-                <li><a href="#" className="hover:text-[#d4af37] transition-colors">The Bridle Path</a></li>
-                <li><a href="#" className="hover:text-[#d4af37] transition-colors">Forest Hill South</a></li>
-                <li><a href="#" className="hover:text-[#d4af37] transition-colors">Rosedale Valley</a></li>
-                <li><a href="#" className="hover:text-[#d4af37] transition-colors">The Annex Collection</a></li>
+                <li><a href="#" onClick={handlePlaceholderLink} className="hover:text-[#d4af37] transition-colors">Yorkville Mastery</a></li>
+                <li><a href="#" onClick={handlePlaceholderLink} className="hover:text-[#d4af37] transition-colors">The Bridle Path</a></li>
+                <li><a href="#" onClick={handlePlaceholderLink} className="hover:text-[#d4af37] transition-colors">Forest Hill South</a></li>
+                <li><a href="#" onClick={handlePlaceholderLink} className="hover:text-[#d4af37] transition-colors">Rosedale Valley</a></li>
+                <li><a href="#" onClick={handlePlaceholderLink} className="hover:text-[#d4af37] transition-colors">The Annex Collection</a></li>
               </ul>
             </div>
 
@@ -525,11 +533,11 @@ const App: React.FC = () => {
                 <Scale size={14} className="text-[#d4af37]" /> Governance
               </h4>
               <ul className="space-y-4 text-sm font-bold text-white">
-                <li><a href="#" className="hover:text-[#d4af37] transition-colors">Privacy Accord</a></li>
-                <li><a href="#" className="hover:text-[#d4af37] transition-colors">Terms of Engagement</a></li>
-                <li><a href="#" className="hover:text-[#d4af37] transition-colors">Cookie Mandate</a></li>
-                <li><a href="#" className="hover:text-[#d4af37] transition-colors">DMCA Compliance</a></li>
-                <li><a href="#" className="hover:text-[#d4af37] transition-colors">Anti-SPAM Policy</a></li>
+                <li><a href="#" onClick={handlePlaceholderLink} className="hover:text-[#d4af37] transition-colors">Privacy Accord</a></li>
+                <li><a href="#" onClick={handlePlaceholderLink} className="hover:text-[#d4af37] transition-colors">Terms of Engagement</a></li>
+                <li><a href="#" onClick={handlePlaceholderLink} className="hover:text-[#d4af37] transition-colors">Cookie Mandate</a></li>
+                <li><a href="#" onClick={handlePlaceholderLink} className="hover:text-[#d4af37] transition-colors">DMCA Compliance</a></li>
+                <li><a href="#" onClick={handlePlaceholderLink} className="hover:text-[#d4af37] transition-colors">Anti-SPAM Policy</a></li>
               </ul>
             </div>
 
@@ -538,11 +546,11 @@ const App: React.FC = () => {
                 <Activity size={14} className="text-[#d4af37]" /> Ecosystem
               </h4>
               <ul className="space-y-4 text-sm font-bold text-white">
-                <li><a href="#" className="hover:text-[#d4af37] transition-colors" title="Gross Commission Income Dashboard">GCI Protection Dashboard</a></li>
-                <li><a href="#" className="hover:text-[#d4af37] transition-colors">MCTB Efficiency Lab</a></li>
-                <li><a href="#" className="hover:text-[#d4af37] transition-colors">FUB Elite Sync</a></li>
-                <li><a href="#" className="hover:text-[#d4af37] transition-colors">API Documentation</a></li>
-                <li><a href="#" className="hover:text-[#d4af37] transition-colors">Security Audit 2026</a></li>
+                <li><a href="#" onClick={handlePlaceholderLink} className="hover:text-[#d4af37] transition-colors" title="Gross Commission Income Dashboard">GCI Protection Dashboard</a></li>
+                <li><a href="#" onClick={handlePlaceholderLink} className="hover:text-[#d4af37] transition-colors">MCTB Efficiency Lab</a></li>
+                <li><a href="#" onClick={handlePlaceholderLink} className="hover:text-[#d4af37] transition-colors">FUB Elite Sync</a></li>
+                <li><a href="#" onClick={handlePlaceholderLink} className="hover:text-[#d4af37] transition-colors">API Documentation</a></li>
+                <li><a href="#" onClick={handlePlaceholderLink} className="hover:text-[#d4af37] transition-colors">Security Audit 2026</a></li>
               </ul>
             </div>
           </div>
@@ -568,7 +576,6 @@ const App: React.FC = () => {
         </footer>
       </main>
 
-      {/* ARGUS Oracle: The Live AI Encyclopedia */}
       <MarketChat />
     </div>
   );
