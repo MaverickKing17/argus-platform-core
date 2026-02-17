@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Search, Bell, Map as MapIcon, ChevronRight, Activity, Zap, Shield, ShieldCheck, Landmark, Building2, Scale, Lock, Database, Trophy, UserCog } from 'lucide-react';
+import { Search, Bell, Map as MapIcon, ChevronRight, Activity, Zap, Shield, ShieldCheck, Landmark, Building2, Scale, Lock, Database, Trophy, UserCog, Info } from 'lucide-react';
 import Sidebar from './components/Sidebar';
 import LeadDetail from './components/LeadDetail';
 import { Lead, Stats, ViewState } from './types';
@@ -80,15 +80,24 @@ const App: React.FC = () => {
           <div className="grid grid-cols-12 gap-6">
             <div className="col-span-12 lg:col-span-8 space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="glass p-7 rounded-3xl border-white/10 group hover:border-[#d4af37]/40 transition-all shadow-xl">
+                <div className="glass p-7 rounded-3xl border-white/10 group hover:border-[#d4af37]/40 transition-all shadow-xl relative overflow-hidden">
                   <div className="flex justify-between items-start mb-5">
                     <div className="p-2.5 bg-[#d4af37]/10 rounded-xl text-[#d4af37] border border-[#d4af37]/20">
                       <Shield size={22} />
                     </div>
                     <span className="text-[11px] text-emerald-400 font-black bg-emerald-400/10 px-2 py-0.5 rounded border border-emerald-400/20">+12% vs LY</span>
                   </div>
-                  <p className="text-[11px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1">GCI Protected</p>
+                  <div className="flex items-center gap-2 mb-1">
+                    <p className="text-[11px] font-black text-gray-400 uppercase tracking-[0.2em]">GCI Protected</p>
+                    <div className="group/tooltip relative">
+                      <Info size={12} className="text-gray-500 cursor-help" />
+                      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 p-2 bg-black border border-white/10 rounded-lg text-[10px] text-white opacity-0 group-hover/tooltip:opacity-100 transition-opacity pointer-events-none z-50 shadow-2xl">
+                        Gross Commission Income: The total revenue generated from closed sales before expenses.
+                      </div>
+                    </div>
+                  </div>
                   <h2 className="text-4xl font-luxury font-bold text-white tracking-tighter transition-all duration-700">{stats.gciProtected}</h2>
+                  <p className="text-[9px] text-white/30 font-bold uppercase tracking-widest mt-1">Gross Commission Income</p>
                 </div>
                 <div className="glass p-7 rounded-3xl border-white/10 group hover:border-blue-400/40 transition-all shadow-xl">
                   <div className="flex justify-between items-start mb-5">
@@ -101,6 +110,7 @@ const App: React.FC = () => {
                   </div>
                   <p className="text-[11px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1">Live Encounters</p>
                   <h2 className="text-4xl font-luxury font-bold text-white tracking-tighter transition-all duration-700">{stats.activeConversations}</h2>
+                  <p className="text-[9px] text-white/30 font-bold uppercase tracking-widest mt-1">AI-Handled Conversations</p>
                 </div>
                 <div className="glass p-7 rounded-3xl border-white/10 group hover:border-emerald-400/40 transition-all shadow-xl">
                   <div className="flex justify-between items-start mb-5">
@@ -114,6 +124,7 @@ const App: React.FC = () => {
                   </div>
                   <p className="text-[11px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1">Response Latency</p>
                   <h2 className="text-4xl font-luxury font-bold text-white tracking-tighter transition-all duration-700">{stats.responseSpeed}</h2>
+                  <p className="text-[9px] text-white/30 font-bold uppercase tracking-widest mt-1">Under 10s benchmark</p>
                 </div>
               </div>
 
@@ -241,8 +252,9 @@ const App: React.FC = () => {
             </div>
             <div className="max-w-md">
               <h2 className="text-3xl font-bold text-white mb-4 tracking-tight">GCI Accumulation Matrix</h2>
+              <p className="text-[#d4af37] font-black uppercase tracking-[0.2em] text-[10px] mb-2">Gross Commission Income Tracking</p>
               <p className="text-gray-400 font-medium leading-relaxed">
-                Visualizing the direct financial impact of ARGUS sales interceptions. Your team has protected an estimated <strong>$1.4M+</strong> in potential commissions this quarter.
+                Visualizing the direct financial impact of ARGUS sales interceptions. Your team has protected an estimated <strong>$1.4M+</strong> in <strong>Gross Commission Income (GCI)</strong> this quarter.
               </p>
             </div>
             <div className="grid grid-cols-2 gap-4 w-full max-w-lg">
@@ -347,7 +359,7 @@ const App: React.FC = () => {
                 <h2 className="text-2xl font-bold text-white tracking-tighter">ARGUS Sales Closer</h2>
               </div>
               <p className="text-white text-sm leading-relaxed max-w-sm font-bold">
-                The premier AI-driven GCI protection suite for elite Toronto real estate professionals. ARGUS intercepts, qualifies, and converts missed opportunities into multi-million dollar closings.
+                The premier AI-driven GCI (Gross Commission Income) protection suite for elite Toronto real estate professionals. ARGUS intercepts, qualifies, and converts missed opportunities into multi-million dollar closings.
               </p>
               <div className="mt-8 flex gap-4">
                 <div className="flex items-center gap-2 text-[10px] font-black text-[#d4af37] uppercase tracking-widest border border-[#d4af37]/20 px-3 py-1.5 rounded-lg bg-[#d4af37]/5">
@@ -387,7 +399,7 @@ const App: React.FC = () => {
                 <Activity size={14} className="text-[#d4af37]" /> Ecosystem
               </h4>
               <ul className="space-y-4 text-sm font-bold text-white">
-                <li><a href="#" className="hover:text-[#d4af37] transition-colors">GCI Protection Dashboard</a></li>
+                <li><a href="#" className="hover:text-[#d4af37] transition-colors" title="Gross Commission Income Dashboard">GCI Protection Dashboard</a></li>
                 <li><a href="#" className="hover:text-[#d4af37] transition-colors">MCTB Efficiency Lab</a></li>
                 <li><a href="#" className="hover:text-[#d4af37] transition-colors">FUB Elite Sync</a></li>
                 <li><a href="#" className="hover:text-[#d4af37] transition-colors">API Documentation</a></li>

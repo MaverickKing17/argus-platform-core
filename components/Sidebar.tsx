@@ -10,9 +10,10 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ activeView, onViewChange, onLogout }) => {
-  const NavItem = ({ icon: Icon, label, view }: { icon: any, label: string, view: ViewState }) => (
+  const NavItem = ({ icon: Icon, label, view, title }: { icon: any, label: string, view: ViewState, title?: string }) => (
     <button
       onClick={() => onViewChange(view)}
+      title={title}
       className={`flex flex-col items-center gap-2 w-full py-5 transition-all duration-300 group relative
         ${activeView === view ? 'text-[#d4af37]' : 'text-white/40 hover:text-white'}`}
     >
@@ -36,10 +37,10 @@ const Sidebar: React.FC<SidebarProps> = ({ activeView, onViewChange, onLogout })
         </div>
         
         <div className="flex flex-col items-center w-full space-y-2">
-          <NavItem icon={LayoutDashboard} label="Pulse" view={ViewState.INSIGHTS} />
-          <NavItem icon={Compass} label="Vault" view={ViewState.VAULT} />
-          <NavItem icon={TrendingUp} label="GCI" view={ViewState.RESULTS} />
-          <NavItem icon={Settings} label="Admin" view={ViewState.SETTINGS} />
+          <NavItem icon={LayoutDashboard} label="Pulse" view={ViewState.INSIGHTS} title="Live Dashboard Overview" />
+          <NavItem icon={Compass} label="Vault" view={ViewState.VAULT} title="Secure Lead Repository" />
+          <NavItem icon={TrendingUp} label="GCI" view={ViewState.RESULTS} title="Gross Commission Income Analytics" />
+          <NavItem icon={Settings} label="Admin" view={ViewState.SETTINGS} title="Platform Configuration" />
         </div>
       </div>
 
