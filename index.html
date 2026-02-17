@@ -51,6 +51,15 @@
       ::-webkit-scrollbar-track { background: rgba(0,0,0,0.3); }
       ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.15); border-radius: 10px; }
       ::-webkit-scrollbar-thumb:hover { background: rgba(212, 175, 55, 0.4); }
+
+      /* Animation primitives */
+      .animate-fade-in-up {
+        animation: fadeInUp 0.6s ease-out forwards;
+      }
+      @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
     </style>
     <script type="importmap">
 {

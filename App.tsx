@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Search, Bell, Map as MapIcon, ChevronRight, Activity, Zap, Shield, ShieldCheck, Landmark, Building2, Scale, Lock, Database, Trophy, UserCog, Info } from 'lucide-react';
+import { Search, Bell, Map as MapIcon, ChevronRight, Activity, Zap, Shield, ShieldCheck, Landmark, Building2, Scale, Lock, Database, Trophy, UserCog, Info, FileText, Fingerprint, BarChart3, Settings2, Globe, Server } from 'lucide-react';
 import Sidebar from './components/Sidebar';
 import LeadDetail from './components/LeadDetail';
 import { Lead, Stats, ViewState } from './types';
@@ -77,7 +77,7 @@ const App: React.FC = () => {
     switch (activeView) {
       case ViewState.INSIGHTS:
         return (
-          <div className="grid grid-cols-12 gap-6">
+          <div className="grid grid-cols-12 gap-6 animate-fade-in-up">
             <div className="col-span-12 lg:col-span-8 space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="glass p-7 rounded-3xl border-white/10 group hover:border-[#d4af37]/40 transition-all shadow-xl relative overflow-hidden">
@@ -229,67 +229,200 @@ const App: React.FC = () => {
         );
       case ViewState.VAULT:
         return (
-          <div className="glass rounded-3xl p-12 border-white/10 flex flex-col items-center justify-center text-center space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-            <div className="p-8 bg-blue-500/10 rounded-full border border-blue-500/20 text-blue-400">
-              <Database size={64} strokeWidth={1} />
+          <div className="max-w-6xl mx-auto space-y-8 animate-fade-in-up">
+            <div className="glass rounded-3xl p-10 border-white/10 relative overflow-hidden">
+               <div className="absolute top-0 right-0 p-12 opacity-5">
+                 <Lock size={200} className="text-[#d4af37]" strokeWidth={0.5} />
+               </div>
+               <div className="relative z-10">
+                 <div className="flex items-center gap-4 mb-8">
+                   <div className="p-4 bg-blue-500/10 rounded-2xl border border-blue-500/20 text-blue-400">
+                     <Database size={32} />
+                   </div>
+                   <div>
+                     <h2 className="text-4xl font-bold text-white tracking-tighter">Lead Encryption Vault</h2>
+                     <p className="text-[#d4af37] font-black uppercase tracking-[0.3em] text-[10px] mt-1">Status: High-Security Lockdown</p>
+                   </div>
+                 </div>
+                 
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                   <div className="space-y-6">
+                     <p className="text-lg text-white font-bold leading-relaxed">
+                       Welcome to the most secure repository for ultra-high-net-worth interactions in North America. 
+                       The ARGUS Lead Encryption Vault utilizes a proprietary Phase-4 biometric handshake protocol to ensure that every sensitive interaction is shielded from unauthorized access. 
+                       Your team’s data is stored in off-shore cold-storage nodes, ensuring that even in the event of a global network disruption, your client relationships remain private and intact. 
+                       Security is not just a feature here; it is the fundamental pillar of Toronto's most elite real estate operations. 
+                       We have implemented a temporal locking mechanism that prevents the export of high-value deal documents outside of authorized principal working hours. 
+                       Furthermore, every data point is fully compliant with CASL regulations, providing you with peace of mind during the most complex negotiations. 
+                       Only the team principal has the authority to initiate the deep decryption sequence required to access historical sentiment mappings.
+                     </p>
+                     <div className="flex gap-4">
+                       <button className="px-8 py-3 gold-gradient rounded-xl text-black font-black uppercase text-xs tracking-widest shadow-2xl">
+                         Initialize Decryption
+                       </button>
+                       <button className="px-8 py-3 bg-white/5 border border-white/10 rounded-xl text-white font-bold uppercase text-xs tracking-widest hover:bg-white/10">
+                         Audit Access Logs
+                       </button>
+                     </div>
+                   </div>
+                   
+                   <div className="space-y-4">
+                     <div className="bg-black/60 p-6 rounded-2xl border border-white/5 space-y-4">
+                       <div className="flex items-center justify-between">
+                         <span className="text-xs font-black text-gray-500 uppercase tracking-widest">Active Security Protocol</span>
+                         <span className="px-2 py-1 bg-emerald-500/10 text-emerald-500 text-[10px] font-black rounded border border-emerald-500/20">ARGUS v4.2</span>
+                       </div>
+                       <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
+                         <div className="h-full w-[94%] gold-gradient shadow-[0_0_10px_#d4af37]" />
+                       </div>
+                       <div className="flex justify-between text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                         <span>Integrity Level</span>
+                         <span>94.8% Secure</span>
+                       </div>
+                     </div>
+                     
+                     <div className="grid grid-cols-2 gap-4">
+                        {[
+                          { label: 'Encrypted Records', value: '4,281', icon: FileText },
+                          { label: 'Last Handshake', value: '2m ago', icon: Fingerprint },
+                          { label: 'Unauthorized Ingress', value: '0', icon: Shield },
+                          { label: 'Global Compliance', value: 'Active', icon: Globe }
+                        ].map((stat, i) => (
+                          <div key={i} className="bg-white/5 p-4 rounded-xl border border-white/5 hover:border-[#d4af37]/30 transition-all cursor-default">
+                            <stat.icon size={16} className="text-[#d4af37] mb-2" />
+                            <p className="text-[9px] font-black text-gray-500 uppercase tracking-widest">{stat.label}</p>
+                            <p className="text-lg font-bold text-white">{stat.value}</p>
+                          </div>
+                        ))}
+                     </div>
+                   </div>
+                 </div>
+               </div>
             </div>
-            <div className="max-w-md">
-              <h2 className="text-3xl font-bold text-white mb-4 tracking-tight">Lead Encryption Vault</h2>
-              <p className="text-gray-400 font-medium leading-relaxed">
-                Secure repository for high-net-worth interactions. All historical conversations and asset preference mappings are encrypted using ARGUS Phase-4 protocols.
-              </p>
-            </div>
-            <button className="px-10 py-4 bg-white/5 border border-white/10 rounded-xl text-white font-black uppercase tracking-[0.3em] hover:bg-white/10 transition-all">
-              Initialize Decryption Sequence
-            </button>
           </div>
         );
       case ViewState.RESULTS:
         return (
-          <div className="glass rounded-3xl p-12 border-white/10 flex flex-col items-center justify-center text-center space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-            <div className="p-8 bg-[#d4af37]/10 rounded-full border border-[#d4af37]/20 text-[#d4af37]">
-              <Trophy size={64} strokeWidth={1} />
-            </div>
-            <div className="max-w-md">
-              <h2 className="text-3xl font-bold text-white mb-4 tracking-tight">GCI Accumulation Matrix</h2>
-              <p className="text-[#d4af37] font-black uppercase tracking-[0.2em] text-[10px] mb-2">Gross Commission Income Tracking</p>
-              <p className="text-gray-400 font-medium leading-relaxed">
-                Visualizing the direct financial impact of ARGUS sales interceptions. Your team has protected an estimated <strong>$1.4M+</strong> in <strong>Gross Commission Income (GCI)</strong> this quarter.
-              </p>
-            </div>
-            <div className="grid grid-cols-2 gap-4 w-full max-w-lg">
-              <div className="bg-black/40 p-6 rounded-2xl border border-white/5">
-                <p className="text-[10px] text-gray-500 font-black uppercase tracking-widest mb-1">MCTB Success</p>
-                <p className="text-2xl font-bold text-[#d4af37]">98.4%</p>
-              </div>
-              <div className="bg-black/40 p-6 rounded-2xl border border-white/5">
-                <p className="text-[10px] text-gray-500 font-black uppercase tracking-widest mb-1">Closures Pending</p>
-                <p className="text-2xl font-bold text-white">12 Elite</p>
-              </div>
+          <div className="max-w-6xl mx-auto space-y-8 animate-fade-in-up">
+            <div className="glass rounded-3xl p-10 border-white/10 relative overflow-hidden">
+               <div className="absolute top-0 right-0 p-12 opacity-5">
+                 <Trophy size={200} className="text-[#d4af37]" strokeWidth={0.5} />
+               </div>
+               <div className="relative z-10">
+                 <div className="flex items-center gap-4 mb-8">
+                   <div className="p-4 bg-[#d4af37]/10 rounded-2xl border border-[#d4af37]/20 text-[#d4af37]">
+                     <BarChart3 size={32} />
+                   </div>
+                   <div>
+                     <h2 className="text-4xl font-bold text-white tracking-tighter">GCI Accumulation Matrix</h2>
+                     <p className="text-[#d4af37] font-black uppercase tracking-[0.3em] text-[10px] mt-1">Gross Commission Income Analytics</p>
+                   </div>
+                 </div>
+
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                    <div className="space-y-6">
+                      <p className="text-lg text-white font-bold leading-relaxed">
+                        The GCI Accumulation Matrix provides a real-time visualization of the direct financial impact generated by the ARGUS sales interception engine. 
+                        By analyzing your current pipeline, we have determined that your team has protected an estimated $1.4M+ in Gross Commission Income (GCI) this fiscal quarter alone. 
+                        This significant ROI is a direct result of our missed-call text-back efficiency, which captures leads that would otherwise be lost to the competition. 
+                        Our proprietary lead scoring algorithm ensures that your energy is focused solely on high-value closures within Toronto’s Golden Triangle. 
+                        We have observed a 98.4% efficiency rate in luxury lead qualification, far surpassing industry standards for high-end boutique teams. 
+                        As you dominate your respective enclaves, ARGUS continues to observe seasonal trends that allow for proactive market adjustments. 
+                        Based on your current velocity, our systems project a 15% increase in protected GCI for the upcoming quarter as you expand your territory rights.
+                      </p>
+                      <div className="grid grid-cols-3 gap-4">
+                        <div className="bg-white/5 p-4 rounded-xl border border-white/5">
+                          <p className="text-[9px] font-black text-gray-500 uppercase tracking-widest">Capture Rate</p>
+                          <p className="text-xl font-bold text-emerald-500">99.2%</p>
+                        </div>
+                        <div className="bg-white/5 p-4 rounded-xl border border-white/5">
+                          <p className="text-[9px] font-black text-gray-500 uppercase tracking-widest">Avg Value</p>
+                          <p className="text-xl font-bold text-white">$4.8M</p>
+                        </div>
+                        <div className="bg-white/5 p-4 rounded-xl border border-white/5">
+                          <p className="text-[9px] font-black text-gray-500 uppercase tracking-widest">AI Lift</p>
+                          <p className="text-xl font-bold text-[#d4af37]">+22%</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="bg-black/40 rounded-3xl p-8 border border-white/10 flex flex-col items-center justify-center text-center">
+                       <div className="relative w-64 h-64 mb-6">
+                         <div className="absolute inset-0 gold-gradient opacity-10 blur-3xl rounded-full" />
+                         <div className="relative z-10 w-full h-full border-4 border-white/5 rounded-full flex flex-col items-center justify-center">
+                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-[0.4em] mb-2">Quarterly Velocity</span>
+                            <span className="text-5xl font-luxury font-bold text-white tracking-tighter">$1.42M</span>
+                            <span className="text-xs font-black text-[#d4af37] uppercase tracking-widest mt-2">Target Achieved</span>
+                         </div>
+                       </div>
+                       <p className="text-xs text-white font-bold italic opacity-60">"The standard of excellence for Toronto's top 1%."</p>
+                    </div>
+                 </div>
+               </div>
             </div>
           </div>
         );
       case ViewState.SETTINGS:
         return (
-          <div className="glass rounded-3xl p-12 border-white/10 flex flex-col items-center justify-center text-center space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-            <div className="p-8 bg-purple-500/10 rounded-full border border-purple-500/20 text-purple-400">
-              <UserCog size={64} strokeWidth={1} />
-            </div>
-            <div className="max-w-md">
-              <h2 className="text-3xl font-bold text-white mb-4 tracking-tight">Admin Override Panel</h2>
-              <p className="text-gray-400 font-medium leading-relaxed">
-                Configure AI intercept parameters, territory authorization, and CRM synchronization frequency. Restricted to team principals only.
-              </p>
-            </div>
-            <div className="flex flex-col gap-3 w-full max-w-xs">
-              <div className="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/5">
-                <span className="text-sm font-bold text-white/80">AI Aggression</span>
-                <span className="text-xs font-black text-[#d4af37]">ELITE</span>
-              </div>
-              <div className="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/5">
-                <span className="text-sm font-bold text-white/80">Auto-FUB Sync</span>
-                <span className="text-xs font-black text-emerald-500">ACTIVE</span>
-              </div>
+          <div className="max-w-6xl mx-auto space-y-8 animate-fade-in-up">
+            <div className="glass rounded-3xl p-10 border-white/10 relative overflow-hidden">
+               <div className="absolute top-0 right-0 p-12 opacity-5">
+                 <Settings2 size={200} className="text-[#d4af37]" strokeWidth={0.5} />
+               </div>
+               <div className="relative z-10">
+                 <div className="flex items-center gap-4 mb-8">
+                   <div className="p-4 bg-purple-500/10 rounded-2xl border border-purple-500/20 text-purple-400">
+                     <UserCog size={32} />
+                   </div>
+                   <div>
+                     <h2 className="text-4xl font-bold text-white tracking-tighter">Admin Override Panel</h2>
+                     <p className="text-[#d4af37] font-black uppercase tracking-[0.3em] text-[10px] mt-1">Authorized Access: Level 7 Clearances</p>
+                   </div>
+                 </div>
+
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                    <div className="space-y-6">
+                      <p className="text-lg text-white font-bold leading-relaxed">
+                        The Admin Override Panel is the central nerve center for your ARGUS deployment and is strictly reserved for team principals with verified security clearances. 
+                        Within this interface, you have the granular control required to configure AI intercept parameters and define the behavioral tone of your digital agents. 
+                        Our AI Aggression settings can be toggled between 'Elite' and 'Stealth' modes, directly impacting how the model handles initial luxury lead qualification. 
+                        The system maintains a real-time, zero-latency synchronization with your CRM, specifically optimized for high-tier Follow Up Boss environments. 
+                        Principal permissions allow you to manage team access levels, ensuring that sensitive GCI projections remain confidential within the core partnership. 
+                        Every system override is recorded in our permanent audit logs, providing a transparent diagnostic history of all protocol adjustments. 
+                        Procedures for the scheduled 2026 security protocol update can also be initiated from this panel to maintain your technological edge. 
+                        Maintaining your district authorization for Toronto's most prestigious enclaves requires periodic integrity checks located in the territory settings sub-panel.
+                      </p>
+                      <div className="flex items-center gap-4">
+                         <div className="flex items-center gap-2 bg-emerald-500/10 px-4 py-2 rounded-lg border border-emerald-500/20">
+                           <div className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_#10b981]" />
+                           <span className="text-[10px] font-black text-emerald-500 uppercase tracking-widest">FUB Node Online</span>
+                         </div>
+                         <div className="flex items-center gap-2 bg-[#d4af37]/10 px-4 py-2 rounded-lg border border-[#d4af37]/20">
+                           <Server size={12} className="text-[#d4af37]" />
+                           <span className="text-[10px] font-black text-[#d4af37] uppercase tracking-widest">Latency: 0.02ms</span>
+                         </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-4">
+                       <h4 className="text-xs font-black text-white uppercase tracking-[0.3em] border-b border-white/10 pb-2">Active Protocols</h4>
+                       {[
+                         { name: 'AI Aggression Level', status: 'ELITE', color: 'text-[#d4af37]' },
+                         { name: 'Follow Up Boss Sync', status: 'ACTIVE', color: 'text-emerald-500' },
+                         { name: 'District Authorization', status: 'LOCKED', color: 'text-blue-500' },
+                         { name: 'Biometric Handshake', status: 'ENFORCED', color: 'text-white' }
+                       ].map((p, i) => (
+                         <div key={i} className="flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/5 group hover:bg-white/10 transition-all">
+                           <span className="text-sm font-bold text-white/80">{p.name}</span>
+                           <span className={`text-[10px] font-black uppercase tracking-widest ${p.color}`}>{p.status}</span>
+                         </div>
+                       ))}
+                       <button className="w-full py-4 mt-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-500 font-black uppercase text-xs tracking-widest hover:bg-red-500/20 transition-all">
+                         Emergency System Wipe
+                       </button>
+                    </div>
+                 </div>
+               </div>
             </div>
           </div>
         );
