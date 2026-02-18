@@ -1,6 +1,6 @@
 
-import React, { useState, useEffect, useCallback } from 'react';
-import { Search, Bell, Map as MapIcon, ChevronRight, Activity, Zap, Shield, ShieldCheck, Landmark, Building2, Scale, Lock, Database, Trophy, UserCog, Info, FileText, Fingerprint, BarChart3, Settings2, Globe, Server } from 'lucide-react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { Search, Bell, Map as MapIcon, ChevronRight, Activity, Zap, Shield, ShieldCheck, Landmark, Building2, Scale, Lock, Database, Trophy, UserCog, Info, FileText, Fingerprint, BarChart3, Settings2, Globe, Server, Link2, ExternalLink, Cpu, History, MessageSquareText, TrendingUp, DollarSign } from 'lucide-react';
 import Sidebar from './components/Sidebar';
 import LeadDetail from './components/LeadDetail';
 import MarketChat from './components/MarketChat';
@@ -14,10 +14,20 @@ const MOCK_LEADS: Lead[] = [
   { id: '4', name: 'Sarah Jenkins', propertyType: 'Condo', sentiment: 'Cold', lastMessage: 'Just browsing at the moment, thanks.', timeAgo: '1h ago', qualificationScore: 45, caslVerified: true, phone: '+1 (416) 555-0988', email: 'sarah.j@outlook.com' },
 ];
 
+const CRMS = [
+  { id: 'fub', name: 'Follow Up Boss', url: 'https://www.followupboss.com', color: 'text-emerald-400', bg: 'bg-emerald-400/10' },
+  { id: 'lofty', name: 'Lofty (Chime)', url: 'https://www.lofty.com', color: 'text-blue-400', bg: 'bg-blue-400/10' },
+  { id: 'kvcore', name: 'KVCore', url: 'https://www.kvcore.com', color: 'text-orange-400', bg: 'bg-orange-400/10' },
+  { id: 'sierra', name: 'Sierra Interactive', url: 'https://www.sierrainteractive.com', color: 'text-purple-400', bg: 'bg-purple-400/10' },
+  { id: 'salesforce', name: 'Salesforce Real Estate', url: 'https://www.salesforce.com', color: 'text-sky-400', bg: 'bg-sky-400/10' }
+];
+
 const App: React.FC = () => {
   const [activeView, setActiveView] = useState<ViewState>(ViewState.INSIGHTS);
   const [selectedLead, setSelectedLead] = useState<Lead | null>(MOCK_LEADS[0]);
   const [territoryBriefing, setTerritoryBriefing] = useState<string>("Initializing secure intelligence stream...");
+  const [activeCRM, setActiveCRM] = useState<typeof CRMS[0] | null>(null);
+  const [gciAtRisk, setGciAtRisk] = useState(8420);
   
   const [stats, setStats] = useState<Stats>({
     gciProtected: '$1,420,000+',
@@ -43,10 +53,8 @@ const App: React.FC = () => {
         const newSpeed = (speedFloat + (Math.random() * 0.2 - 0.1)).toFixed(1);
         const gciIncrement = Math.random() > 0.5 ? Math.floor(Math.random() * 300) : 0;
         
-        setGciBase(old => {
-          const updated = old + gciIncrement;
-          return updated;
-        });
+        setGciBase(old => old + gciIncrement);
+        setGciAtRisk(prevRisk => prevRisk + (Math.random() * 5));
 
         return {
           ...prev,
@@ -66,7 +74,6 @@ const App: React.FC = () => {
 
   const handlePlaceholderLink = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
-    console.log("Tactical link navigation intercepted. Access restricted in demo mode.");
   }, []);
 
   const SentimentBadge = ({ sentiment }: { sentiment: Lead['sentiment'] }) => {
@@ -83,12 +90,88 @@ const App: React.FC = () => {
     );
   };
 
+  const renderCRMModal = () => {
+    if (!activeCRM) return null;
+    return (
+      <div className="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-black/80 backdrop-blur-md">
+        <div className="glass w-full max-w-md rounded-[2.5rem] border border-[#d4af37]/40 p-10 animate-fade-in-up relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-full h-1 gold-gradient"></div>
+          <button 
+            onClick={() => setActiveCRM(null)}
+            className="absolute top-6 right-6 text-white/30 hover:text-white transition-colors"
+          >
+            <Shield size={24} />
+          </button>
+          
+          <div className="flex flex-col items-center text-center mb-8">
+            <div className={`w-16 h-16 rounded-2xl ${activeCRM.bg} ${activeCRM.color} flex items-center justify-center mb-4 border border-white/10`}>
+              <Link2 size={32} />
+            </div>
+            <h3 className="text-2xl font-bold text-white tracking-tight">{activeCRM.name}</h3>
+            <p className="text-[10px] text-[#d4af37] font-black uppercase tracking-[0.2em] mt-2">Biometric Handshake Required</p>
+          </div>
+
+          <div className="space-y-4 mb-8">
+            <div className="space-y-1">
+              <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Principal ID</label>
+              <input type="text" placeholder="agent@luxury-toronto.ca" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3.5 text-sm text-white focus:border-[#d4af37]/50 outline-none transition-all" />
+            </div>
+            <div className="space-y-1">
+              <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Secure Passkey</label>
+              <input type="password" placeholder="••••••••" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3.5 text-sm text-white focus:border-[#d4af37]/50 outline-none transition-all" />
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-3">
+            <button className="w-full gold-gradient py-4 rounded-xl text-black font-black uppercase text-xs tracking-widest shadow-2xl hover:scale-[1.02] transition-all">
+              Initialize Synchronized Stream
+            </button>
+            <a 
+              href={activeCRM.url} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="w-full py-4 bg-white/5 border border-white/10 rounded-xl text-white font-bold uppercase text-[10px] tracking-widest text-center flex items-center justify-center gap-2 hover:bg-white/10 transition-all"
+            >
+              Open Native {activeCRM.name} <ExternalLink size={14} className="text-[#d4af37]" />
+            </a>
+          </div>
+          
+          <p className="text-[9px] text-white/20 font-black uppercase tracking-[0.3em] mt-8 text-center">
+            Zero-Leak Proxy Encryption Enabled
+          </p>
+        </div>
+      </div>
+    );
+  };
+
   const renderActiveView = () => {
     switch (activeView) {
       case ViewState.INSIGHTS:
         return (
           <div className="grid grid-cols-12 gap-6 animate-fade-in-up">
             <div className="col-span-12 lg:col-span-8 space-y-6">
+              {/* MONEY MAKING FEATURE: Live Velocity Meter */}
+              <div className="glass p-5 rounded-3xl border-[#d4af37]/20 flex items-center justify-between gap-8 bg-gradient-to-r from-black via-black to-[#d4af37]/5 overflow-hidden group">
+                <div className="flex items-center gap-4">
+                  <div className="w-14 h-14 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-500 shadow-inner">
+                    <TrendingUp size={28} className="animate-pulse" />
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-black text-white uppercase tracking-[0.2em]">Live Loss Velocity</h4>
+                    <p className="text-xs text-gray-500 font-bold mt-1">GCI currently at risk due to lag:</p>
+                  </div>
+                </div>
+                <div className="flex items-baseline gap-2">
+                   <span className="text-3xl font-luxury font-bold text-red-500 tracking-tighter">${gciAtRisk.toFixed(0)}</span>
+                   <span className="text-[10px] font-black text-red-500/50 uppercase tracking-widest animate-pulse">Rising</span>
+                </div>
+                <div className="flex gap-4">
+                   <button className="px-5 py-2.5 gold-gradient rounded-xl text-black text-[10px] font-black uppercase tracking-widest shadow-xl hover:scale-105 transition-all">
+                     Initialize AI Closer
+                   </button>
+                </div>
+              </div>
+
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="glass p-7 rounded-3xl border-white/10 group hover:border-[#d4af37]/40 transition-all shadow-xl relative overflow-hidden">
                   <div className="flex justify-between items-start mb-5">
@@ -99,17 +182,6 @@ const App: React.FC = () => {
                   </div>
                   <div className="flex items-center gap-2 mb-1">
                     <p className="text-[11px] font-black text-gray-400 uppercase tracking-[0.2em]">GCI Protected</p>
-                    <div className="group/tooltip relative">
-                      <div className="p-1 cursor-help hover:bg-white/10 rounded-full transition-colors">
-                        <Info size={14} className="text-[#d4af37]" />
-                      </div>
-                      <div className="absolute bottom-full left-0 mb-3 w-64 p-4 bg-[#0a0a0a] border border-[#d4af37]/30 rounded-2xl text-[11px] text-white opacity-0 group-hover/tooltip:opacity-100 transition-all duration-300 pointer-events-none z-50 shadow-[0_10px_40px_rgba(0,0,0,0.8)] border-t-[#d4af37]">
-                        <p className="font-black text-[#d4af37] uppercase tracking-widest mb-2 border-b border-white/10 pb-1">Asset Intelligence</p>
-                        <p className="leading-relaxed font-medium">
-                          <strong className="text-white">Gross Commission Income (GCI)</strong> represents the total revenue your team has successfully shielded from abandonment. It is the lifeblood of elite operations, tracking every dollar saved by ARGUS's sub-6s interception protocol.
-                        </p>
-                      </div>
-                    </div>
                   </div>
                   <h2 className="text-4xl font-luxury font-bold text-white tracking-tighter transition-all duration-700">{stats.gciProtected}</h2>
                   <p className="text-[9px] text-white/30 font-bold uppercase tracking-widest mt-1">Gross Commission Income</p>
@@ -118,9 +190,6 @@ const App: React.FC = () => {
                   <div className="flex justify-between items-start mb-5">
                     <div className="p-2.5 bg-blue-500/10 rounded-xl text-blue-400 border border-blue-400/20">
                       <Activity size={22} />
-                    </div>
-                    <div className="flex gap-1.5 items-center">
-                      {[1, 2, 3, 4, 5].map(i => <div key={i} className={`w-1.5 h-4 rounded-full transition-all duration-500 ${i < (stats.activeConversations / 12) ? 'bg-blue-400 shadow-[0_0_8px_rgba(96,165,250,0.5)]' : 'bg-white/10'}`} />)}
                     </div>
                   </div>
                   <p className="text-[11px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1">Live Encounters</p>
@@ -132,14 +201,43 @@ const App: React.FC = () => {
                     <div className="p-2.5 bg-emerald-500/10 rounded-xl text-emerald-400 border border-emerald-400/20">
                       <Zap size={22} />
                     </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-[10px] font-bold text-emerald-500 uppercase">Instant</span>
-                      <div className="w-3 h-3 bg-emerald-500 rounded-full animate-ping" />
-                    </div>
                   </div>
                   <p className="text-[11px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1">Response Latency</p>
                   <h2 className="text-4xl font-luxury font-bold text-white tracking-tighter transition-all duration-700">{stats.responseSpeed}</h2>
                   <p className="text-[9px] text-white/30 font-bold uppercase tracking-widest mt-1">Under 10s benchmark</p>
+                </div>
+              </div>
+
+              {/* INTEGRATIONS HUB */}
+              <div className="glass rounded-3xl p-8 border-[#d4af37]/10">
+                <div className="flex items-center justify-between mb-8">
+                  <div>
+                    <h3 className="text-xl font-bold text-white tracking-tight">Ecosystem Synchronization</h3>
+                    <p className="text-[10px] text-[#d4af37] uppercase tracking-[0.3em] font-black mt-1">One-click CRM Handshake</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] text-gray-500 font-bold uppercase">Master Status:</span>
+                    <div className="flex items-center gap-1.5 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 rounded-full">
+                       <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                       <span className="text-[9px] font-black text-emerald-500 uppercase tracking-widest">Global Link Active</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                  {CRMS.map(crm => (
+                    <button 
+                      key={crm.id}
+                      onClick={() => setActiveCRM(crm)}
+                      className="glass group p-5 rounded-2xl border-white/5 hover:border-[#d4af37]/40 transition-all flex flex-col items-center gap-3 text-center"
+                    >
+                      <div className={`w-12 h-12 rounded-xl ${crm.bg} ${crm.color} flex items-center justify-center transition-transform group-hover:scale-110 shadow-lg`}>
+                        <Link2 size={24} />
+                      </div>
+                      <span className="text-[10px] font-black text-white/60 group-hover:text-white uppercase tracking-widest transition-colors">
+                        {crm.name}
+                      </span>
+                    </button>
+                  ))}
                 </div>
               </div>
 
@@ -149,9 +247,6 @@ const App: React.FC = () => {
                     <h3 className="text-xl font-bold text-white tracking-tight">Lead Intelligence Core</h3>
                     <p className="text-[10px] text-[#d4af37] uppercase tracking-[0.3em] font-black mt-1">Real-time interaction matrix</p>
                   </div>
-                  <button onClick={handlePlaceholderLink} className="px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-xs font-bold text-white hover:bg-white/10 transition-all flex items-center gap-2">
-                    View Full Archive <ChevronRight size={14} className="text-[#d4af37]" />
-                  </button>
                 </div>
                 <div className="overflow-x-auto">
                   <table className="w-full text-left">
@@ -160,7 +255,6 @@ const App: React.FC = () => {
                         <th className="px-8 py-5 font-black">Identity</th>
                         <th className="px-8 py-5 font-black">Asset Class</th>
                         <th className="px-8 py-5 font-black">Sentiment</th>
-                        <th className="px-8 py-5 font-black">Intercepted Message</th>
                         <th className="px-8 py-5 font-black">Temporal</th>
                       </tr>
                     </thead>
@@ -188,52 +282,12 @@ const App: React.FC = () => {
                             <SentimentBadge sentiment={lead.sentiment} />
                           </td>
                           <td className="px-8 py-6">
-                            <p className="text-xs text-gray-400 truncate max-w-[200px] italic font-medium leading-relaxed text-white/70 group-hover:text-white">"{lead.lastMessage}"</p>
-                          </td>
-                          <td className="px-8 py-6">
                             <span className="text-[11px] font-black text-gray-500 group-hover:text-[#d4af37] tracking-widest">{lead.timeAgo}</span>
                           </td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
-                </div>
-              </div>
-
-              <div className="glass rounded-3xl p-8 relative overflow-hidden group border-white/10">
-                <div className="absolute top-0 right-0 p-10 opacity-10 group-hover:opacity-20 transition-opacity">
-                  <MapIcon size={160} className="text-[#d4af37]" strokeWidth={0.5} />
-                </div>
-                <div className="relative z-10 max-w-2xl">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-12 h-12 rounded-2xl bg-[#d4af37]/10 flex items-center justify-center text-[#d4af37] border border-[#d4af37]/20">
-                      <Landmark size={24} />
-                    </div>
-                    <div>
-                      <h3 className="text-2xl font-bold text-white tracking-tight">Toronto Enclave Mastery</h3>
-                      <p className="text-[10px] text-[#d4af37] uppercase tracking-[0.3em] font-black">District Authorization: Active</p>
-                    </div>
-                  </div>
-                  <p className="text-base text-gray-300 mb-6 leading-relaxed font-medium">
-                    ARGUS is currently monitoring missed-call interceptions across the <span className="text-white font-bold underline decoration-[#d4af37]">Golden Triangle</span> of Toronto real estate. Exclusive response rights for your team are locked until Dec 2026.
-                  </p>
-                  <div className="bg-black/40 border border-white/10 p-5 rounded-2xl mb-8 shadow-inner">
-                    <div className="flex items-center gap-2 mb-3">
-                      <div className="w-1.5 h-1.5 rounded-full bg-[#d4af37] shadow-[0_0_5px_#d4af37]" />
-                      <span className="text-[10px] font-black text-[#d4af37] uppercase tracking-[0.2em]">Market Briefing: Yorkville Core</span>
-                    </div>
-                    <p className="text-sm text-white/90 italic leading-relaxed font-medium">
-                      {territoryBriefing}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <button onClick={handlePlaceholderLink} className="px-8 py-3 gold-gradient rounded-xl text-black font-black text-xs uppercase tracking-widest shadow-2xl hover:scale-105 transition-all">
-                      Initialize Mapping
-                    </button>
-                    <button onClick={handlePlaceholderLink} className="px-8 py-3 bg-white/5 border border-white/10 rounded-xl text-white font-bold text-xs uppercase tracking-widest hover:bg-white/10 transition-all">
-                      Territory Expansion
-                    </button>
-                  </div>
                 </div>
               </div>
             </div>
@@ -259,58 +313,22 @@ const App: React.FC = () => {
                      <p className="text-[#d4af37] font-black uppercase tracking-[0.3em] text-[10px] mt-1">Status: High-Security Lockdown</p>
                    </div>
                  </div>
-                 
-                 <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                   <div className="space-y-6">
-                     <p className="text-lg text-white font-bold leading-relaxed">
-                       Welcome to the most secure repository for ultra-high-net-worth interactions in North America. 
-                       The ARGUS Lead Encryption Vault utilizes a proprietary Phase-4 biometric handshake protocol to ensure that every sensitive interaction is shielded from unauthorized access. 
-                       Your team’s data is stored in off-shore cold-storage nodes, ensuring that even in the event of a global network disruption, your client relationships remain private and intact. 
-                       Security is not just a feature here; it is the fundamental pillar of Toronto's most elite real estate operations. 
-                       We have implemented a temporal locking mechanism that prevents the export of high-value deal documents outside of authorized principal working hours. 
-                       Furthermore, every data point is fully compliant with CASL regulations, providing you with peace of mind during the most complex negotiations. 
-                       Only the team principal has the authority to initiate the deep decryption sequence required to access historical sentiment mappings.
-                     </p>
-                     <div className="flex gap-4">
-                       <button onClick={handlePlaceholderLink} className="px-8 py-3 gold-gradient rounded-xl text-black font-black uppercase text-xs tracking-widest shadow-2xl">
-                         Initialize Decryption
-                       </button>
-                       <button onClick={handlePlaceholderLink} className="px-8 py-3 bg-white/5 border border-white/10 rounded-xl text-white font-bold uppercase text-xs tracking-widest hover:bg-white/10">
-                         Audit Access Logs
-                       </button>
-                     </div>
-                   </div>
-                   
-                   <div className="space-y-4">
-                     <div className="bg-black/60 p-6 rounded-2xl border border-white/5 space-y-4">
-                       <div className="flex items-center justify-between">
-                         <span className="text-xs font-black text-gray-500 uppercase tracking-widest">Active Security Protocol</span>
-                         <span className="px-2 py-1 bg-emerald-500/10 text-emerald-500 text-[10px] font-black rounded border border-emerald-500/20">ARGUS v4.2</span>
-                       </div>
-                       <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
-                         <div className="h-full w-[94%] gold-gradient shadow-[0_0_10px_#d4af37]" />
-                       </div>
-                       <div className="flex justify-between text-[10px] font-black text-gray-400 uppercase tracking-widest">
-                         <span>Integrity Level</span>
-                         <span>94.8% Secure</span>
-                       </div>
-                     </div>
-                     
-                     <div className="grid grid-cols-2 gap-4">
-                        {[
-                          { label: 'Encrypted Records', value: '4,281', icon: FileText },
-                          { label: 'Last Handshake', value: '2m ago', icon: Fingerprint },
-                          { label: 'Unauthorized Ingress', value: '0', icon: Shield },
-                          { label: 'Global Compliance', value: 'Active', icon: Globe }
-                        ].map((stat, i) => (
-                          <div key={i} className="bg-white/5 p-4 rounded-xl border border-white/5 hover:border-[#d4af37]/30 transition-all cursor-default">
-                            <stat.icon size={16} className="text-[#d4af37] mb-2" />
-                            <p className="text-[9px] font-black text-gray-500 uppercase tracking-widest">{stat.label}</p>
-                            <p className="text-lg font-bold text-white">{stat.value}</p>
-                          </div>
-                        ))}
-                     </div>
-                   </div>
+                 <p className="text-lg text-white font-bold leading-relaxed max-w-2xl">
+                   Securely storing the most valuable data in the city. Our Vault utilizes military-grade encryption to protect the private interactions of your ultra-high-net-worth clients.
+                 </p>
+                 <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-12">
+                    {[
+                      { label: 'Asset records', value: '4,281', icon: FileText },
+                      { label: 'Secure handshakes', value: '829', icon: Fingerprint },
+                      { label: 'Protocol Version', value: 'Phase 4', icon: Shield },
+                      { label: 'Global Compliance', value: 'Active', icon: Globe }
+                    ].map((stat, i) => (
+                      <div key={i} className="bg-white/5 p-6 rounded-2xl border border-white/5">
+                        <stat.icon size={20} className="text-[#d4af37] mb-3" />
+                        <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest">{stat.label}</p>
+                        <p className="text-2xl font-bold text-white">{stat.value}</p>
+                      </div>
+                    ))}
                  </div>
                </div>
             </div>
@@ -329,48 +347,42 @@ const App: React.FC = () => {
                      <BarChart3 size={32} />
                    </div>
                    <div>
-                     <h2 className="text-4xl font-bold text-white tracking-tighter">GCI Accumulation Matrix</h2>
-                     <p className="text-[#d4af37] font-black uppercase tracking-[0.3em] text-[10px] mt-1">Gross Commission Income Analytics</p>
+                     <h2 className="text-4xl font-bold text-white tracking-tighter">Financial Intelligence</h2>
+                     <p className="text-[#d4af37] font-black uppercase tracking-[0.3em] text-[10px] mt-1">GCI Projection Matrix</p>
                    </div>
                  </div>
-
+                 
                  <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
                     <div className="space-y-6">
-                      <p className="text-lg text-white font-bold leading-relaxed">
-                        The GCI Accumulation Matrix provides a real-time visualization of the direct financial impact generated by the ARGUS sales interception engine. 
-                        By analyzing your current pipeline, we have determined that your team has protected an estimated $1.4M+ in Gross Commission Income (GCI) this fiscal quarter alone. 
-                        This significant ROI is a direct result of our missed-call text-back efficiency, which captures leads that would otherwise be lost to the competition. 
-                        Our proprietary lead scoring algorithm ensures that your energy is focused solely on high-value closures within Toronto’s Golden Triangle. 
-                        We have observed a 98.4% efficiency rate in luxury lead qualification, far surpassing industry standards for high-end boutique teams. 
-                        As you dominate your respective enclaves, ARGUS continues to observe seasonal trends that allow for proactive market adjustments. 
-                        Based on your current velocity, our systems project a 15% increase in protected GCI for the upcoming quarter as you expand your territory rights.
-                      </p>
-                      <div className="grid grid-cols-3 gap-4">
-                        <div className="bg-white/5 p-4 rounded-xl border border-white/5">
-                          <p className="text-[9px] font-black text-gray-500 uppercase tracking-widest">Capture Rate</p>
-                          <p className="text-xl font-bold text-emerald-500">99.2%</p>
-                        </div>
-                        <div className="bg-white/5 p-4 rounded-xl border border-white/5">
-                          <p className="text-[9px] font-black text-gray-500 uppercase tracking-widest">Avg Value</p>
-                          <p className="text-xl font-bold text-white">$4.8M</p>
-                        </div>
-                        <div className="bg-white/5 p-4 rounded-xl border border-white/5">
-                          <p className="text-[9px] font-black text-gray-500 uppercase tracking-widest">AI Lift</p>
-                          <p className="text-xl font-bold text-[#d4af37]">+22%</p>
-                        </div>
-                      </div>
+                       <div className="bg-white/5 p-8 rounded-3xl border border-white/10">
+                          <h4 className="text-xs font-black text-gray-400 uppercase tracking-widest mb-6">Pipeline Velocity</h4>
+                          <div className="space-y-6">
+                             {[
+                               { label: 'Interception Rate', val: 99, color: 'gold-gradient' },
+                               { label: 'Qualified Sentiment', val: 84, color: 'bg-blue-400' },
+                               { label: 'GCI Lock-in', val: 72, color: 'bg-emerald-400' }
+                             ].map((bar, i) => (
+                               <div key={i} className="space-y-2">
+                                  <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-white/60">
+                                    <span>{bar.label}</span>
+                                    <span>{bar.val}%</span>
+                                  </div>
+                                  <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
+                                     <div className={`h-full ${bar.color} rounded-full transition-all duration-1000 shadow-xl`} style={{ width: `${bar.val}%` }} />
+                                  </div>
+                               </div>
+                             ))}
+                          </div>
+                       </div>
                     </div>
-
-                    <div className="bg-black/40 rounded-3xl p-8 border border-white/10 flex flex-col items-center justify-center text-center">
-                       <div className="relative w-64 h-64 mb-6">
-                         <div className="absolute inset-0 gold-gradient opacity-10 blur-3xl rounded-full" />
-                         <div className="relative z-10 w-full h-full border-4 border-white/5 rounded-full flex flex-col items-center justify-center">
-                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-[0.4em] mb-2">Quarterly Velocity</span>
-                            <span className="text-5xl font-luxury font-bold text-white tracking-tighter">$1.42M</span>
-                            <span className="text-xs font-black text-[#d4af37] uppercase tracking-widest mt-2">Target Achieved</span>
+                    <div className="bg-black/40 rounded-3xl border border-[#d4af37]/20 p-8 flex flex-col items-center justify-center text-center">
+                       <div className="w-24 h-24 rounded-full gold-gradient p-1 mb-6">
+                         <div className="w-full h-full rounded-full bg-black flex items-center justify-center">
+                           <DollarSign size={40} className="text-[#d4af37]" />
                          </div>
                        </div>
-                       <p className="text-xs text-white font-bold italic opacity-60">"The standard of excellence for Toronto's top 1%."</p>
+                       <h3 className="text-3xl font-luxury font-bold text-white tracking-tighter">$1,420,000+</h3>
+                       <p className="text-[10px] font-black text-[#d4af37] uppercase tracking-[0.4em] mt-2">Protected Revenue</p>
                     </div>
                  </div>
                </div>
@@ -381,61 +393,25 @@ const App: React.FC = () => {
         return (
           <div className="max-w-6xl mx-auto space-y-8 animate-fade-in-up">
             <div className="glass rounded-3xl p-10 border-white/10 relative overflow-hidden">
-               <div className="absolute top-0 right-0 p-12 opacity-5">
-                 <Settings2 size={200} className="text-[#d4af37]" strokeWidth={0.5} />
-               </div>
                <div className="relative z-10">
                  <div className="flex items-center gap-4 mb-8">
                    <div className="p-4 bg-purple-500/10 rounded-2xl border border-purple-500/20 text-purple-400">
-                     <UserCog size={32} />
+                     <Settings2 size={32} />
                    </div>
                    <div>
-                     <h2 className="text-4xl font-bold text-white tracking-tighter">Admin Override Panel</h2>
-                     <p className="text-[#d4af37] font-black uppercase tracking-[0.3em] text-[10px] mt-1">Authorized Access: Level 7 Clearances</p>
+                     <h2 className="text-4xl font-bold text-white tracking-tighter">System Configuration</h2>
+                     <p className="text-[#d4af37] font-black uppercase tracking-[0.3em] text-[10px] mt-1">Phase 4 Overrides Active</p>
                    </div>
                  </div>
-
-                 <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                    <div className="space-y-6">
-                      <p className="text-lg text-white font-bold leading-relaxed">
-                        The Admin Override Panel is the central nerve center for your ARGUS deployment and is strictly reserved for team principals with verified security clearances. 
-                        Within this interface, you have the granular control required to configure AI intercept parameters and define the behavioral tone of your digital agents. 
-                        Our AI Aggression settings can be toggled between 'Elite' and 'Stealth' modes, directly impacting how the model handles initial luxury lead qualification. 
-                        The system maintains a real-time, zero-latency synchronization with your CRM, specifically optimized for high-tier Follow Up Boss environments. 
-                        Principal permissions allow you to manage team access levels, ensuring that sensitive GCI projections remain confidential within the core partnership. 
-                        Every system override is recorded in our permanent audit logs, providing a transparent diagnostic history of all protocol adjustments. 
-                        Procedures for the scheduled 2026 security protocol update can also be initiated from this panel to maintain your technological edge. 
-                        Maintaining your district authorization for Toronto's most prestigious enclaves requires periodic integrity checks located in the territory settings sub-panel.
-                      </p>
-                      <div className="flex items-center gap-4">
-                         <div className="flex items-center gap-2 bg-emerald-500/10 px-4 py-2 rounded-lg border border-emerald-500/20">
-                           <div className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_#10b981]" />
-                           <span className="text-[10px] font-black text-emerald-500 uppercase tracking-widest">FUB Node Online</span>
-                         </div>
-                         <div className="flex items-center gap-2 bg-[#d4af37]/10 px-4 py-2 rounded-lg border border-[#d4af37]/20">
-                           <Server size={12} className="text-[#d4af37]" />
-                           <span className="text-[10px] font-black text-[#d4af37] uppercase tracking-widest">Latency: 0.02ms</span>
-                         </div>
-                      </div>
-                    </div>
-
-                    <div className="space-y-4">
-                       <h4 className="text-xs font-black text-white uppercase tracking-[0.3em] border-b border-white/10 pb-2">Active Protocols</h4>
-                       {[
-                         { name: 'AI Aggression Level', status: 'ELITE', color: 'text-[#d4af37]' },
-                         { name: 'Follow Up Boss Sync', status: 'ACTIVE', color: 'text-emerald-500' },
-                         { name: 'District Authorization', status: 'LOCKED', color: 'text-blue-500' },
-                         { name: 'Biometric Handshake', status: 'ENFORCED', color: 'text-white' }
-                       ].map((p, i) => (
-                         <div key={i} className="flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/5 group hover:bg-white/10 transition-all">
-                           <span className="text-sm font-bold text-white/80">{p.name}</span>
-                           <span className={`text-[10px] font-black uppercase tracking-widest ${p.color}`}>{p.status}</span>
-                         </div>
-                       ))}
-                       <button onClick={handlePlaceholderLink} className="w-full py-4 mt-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-500 font-black uppercase text-xs tracking-widest hover:bg-red-500/20 transition-all">
-                         Emergency System Wipe
-                       </button>
-                    </div>
+                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                   {['AI Aggression', 'Intercept Window', 'Sentiment Model', 'Sync Frequency', 'Biometric Mode', 'Privacy Level'].map((opt, i) => (
+                     <div key={i} className="bg-white/5 p-6 rounded-2xl border border-white/5 flex items-center justify-between group hover:border-[#d4af37]/40 transition-all cursor-pointer">
+                        <span className="text-sm font-bold text-white/80">{opt}</span>
+                        <div className="w-12 h-6 bg-black/40 rounded-full p-1 border border-white/10 relative">
+                           <div className="w-4 h-4 rounded-full gold-gradient absolute right-1" />
+                        </div>
+                     </div>
+                   ))}
                  </div>
                </div>
             </div>
@@ -453,7 +429,6 @@ const App: React.FC = () => {
         style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1574362848149-11496d93a7c7?auto=format&fit=crop&q=80&w=2000)' }}
       />
       <div className="absolute inset-0 bg-gradient-to-br from-[#050505] via-transparent to-black pointer-events-none" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(212,175,55,0.06),_transparent_50%)] pointer-events-none" />
 
       <Sidebar activeView={activeView} onViewChange={setActiveView} onLogout={handleLogout} />
 
@@ -472,11 +447,11 @@ const App: React.FC = () => {
               <Search size={18} className="text-white/40 group-focus-within:text-[#d4af37]" />
               <input 
                 type="text" 
-                placeholder="Search leads, GCI, or territory..." 
+                placeholder="Search intel..." 
                 className="bg-transparent border-none outline-none text-sm w-72 placeholder-white/20 text-white font-bold"
               />
             </div>
-            <button onClick={handlePlaceholderLink} className="relative p-2.5 bg-white/5 border border-white/10 rounded-full text-white hover:border-[#d4af37]/50 hover:bg-white/10 transition-all shadow-xl">
+            <button className="relative p-2.5 bg-white/5 border border-white/10 rounded-full text-white hover:border-[#d4af37]/50 hover:bg-white/10 transition-all shadow-xl">
               <Bell size={20} />
               <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-[#d4af37] rounded-full border-2 border-[#020202]" />
             </button>
@@ -487,7 +462,7 @@ const App: React.FC = () => {
               </div>
               <div className="w-11 h-11 rounded-full gold-gradient p-[1.5px] shadow-2xl">
                 <div className="w-full h-full rounded-full bg-black flex items-center justify-center overflow-hidden">
-                  <img src="https://picsum.photos/200" alt="Avatar" className="w-full h-full object-cover grayscale brightness-150" />
+                  <img src="https://picsum.photos/seed/argus/200" alt="Avatar" className="w-full h-full object-cover grayscale brightness-150" />
                 </div>
               </div>
             </div>
@@ -496,6 +471,8 @@ const App: React.FC = () => {
 
         {renderActiveView()}
 
+        {renderCRMModal()}
+
         <footer className="mt-20 pt-16 pb-12 border-t border-white/10 bg-[#0c0c0c] transition-colors duration-500">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 mb-16">
             <div className="lg:col-span-2">
@@ -503,74 +480,39 @@ const App: React.FC = () => {
                 <div className="w-10 h-10 rounded-xl gold-gradient flex items-center justify-center shadow-lg">
                   <ShieldCheck className="text-black" size={24} />
                 </div>
-                <h2 className="text-2xl font-bold text-white tracking-tighter">ARGUS Sales Closer</h2>
+                <h2 className="text-2xl font-bold text-white tracking-tighter">ARGUS Elite</h2>
               </div>
-              <p className="text-white text-sm leading-relaxed max-w-sm font-bold">
-                The premier AI-driven GCI (Gross Commission Income) protection suite for elite Toronto real estate professionals. ARGUS intercepts, qualifies, and converts missed opportunities into multi-million dollar closings.
+              <p className="text-white text-sm leading-relaxed max-w-sm font-bold opacity-60">
+                The standard of technological excellence for Toronto's multi-million dollar closers. Intercepting missed calls, qualifying sentiment, and maximizing GCI with Zero Friction.
               </p>
-              <div className="mt-8 flex gap-4">
-                <div className="flex items-center gap-2 text-[10px] font-black text-[#d4af37] uppercase tracking-widest border border-[#d4af37]/20 px-3 py-1.5 rounded-lg bg-[#d4af37]/5">
-                  <Lock size={12} /> SECURE PROTOCOL V4.2
-                </div>
-              </div>
             </div>
-
             <div>
               <h4 className="text-white font-black text-xs uppercase tracking-[0.3em] mb-6 flex items-center gap-2">
                 <Building2 size={14} className="text-[#d4af37]" /> Enclaves
               </h4>
-              <ul className="space-y-4 text-sm font-bold text-white">
-                <li><a href="#" onClick={handlePlaceholderLink} className="hover:text-[#d4af37] transition-colors">Yorkville Mastery</a></li>
-                <li><a href="#" onClick={handlePlaceholderLink} className="hover:text-[#d4af37] transition-colors">The Bridle Path</a></li>
-                <li><a href="#" onClick={handlePlaceholderLink} className="hover:text-[#d4af37] transition-colors">Forest Hill South</a></li>
-                <li><a href="#" onClick={handlePlaceholderLink} className="hover:text-[#d4af37] transition-colors">Rosedale Valley</a></li>
-                <li><a href="#" onClick={handlePlaceholderLink} className="hover:text-[#d4af37] transition-colors">The Annex Collection</a></li>
+              <ul className="space-y-4 text-[11px] font-black text-white/50 uppercase tracking-widest">
+                <li className="hover:text-[#d4af37] transition-colors cursor-pointer">Yorkville Core</li>
+                <li className="hover:text-[#d4af37] transition-colors cursor-pointer">The Bridle Path</li>
+                <li className="hover:text-[#d4af37] transition-colors cursor-pointer">Forest Hill South</li>
+                <li className="hover:text-[#d4af37] transition-colors cursor-pointer">The Annex</li>
               </ul>
             </div>
-
             <div>
               <h4 className="text-white font-black text-xs uppercase tracking-[0.3em] mb-6 flex items-center gap-2">
-                <Scale size={14} className="text-[#d4af37]" /> Governance
+                <Scale size={14} className="text-[#d4af37]" /> Sync Nodes
               </h4>
-              <ul className="space-y-4 text-sm font-bold text-white">
-                <li><a href="#" onClick={handlePlaceholderLink} className="hover:text-[#d4af37] transition-colors">Privacy Accord</a></li>
-                <li><a href="#" onClick={handlePlaceholderLink} className="hover:text-[#d4af37] transition-colors">Terms of Engagement</a></li>
-                <li><a href="#" onClick={handlePlaceholderLink} className="hover:text-[#d4af37] transition-colors">Cookie Mandate</a></li>
-                <li><a href="#" onClick={handlePlaceholderLink} className="hover:text-[#d4af37] transition-colors">DMCA Compliance</a></li>
-                <li><a href="#" onClick={handlePlaceholderLink} className="hover:text-[#d4af37] transition-colors">Anti-SPAM Policy</a></li>
-              </ul>
-            </div>
-
-            <div>
-              <h4 className="text-white font-black text-xs uppercase tracking-[0.3em] mb-6 flex items-center gap-2">
-                <Activity size={14} className="text-[#d4af37]" /> Ecosystem
-              </h4>
-              <ul className="space-y-4 text-sm font-bold text-white">
-                <li><a href="#" onClick={handlePlaceholderLink} className="hover:text-[#d4af37] transition-colors" title="Gross Commission Income Dashboard">GCI Protection Dashboard</a></li>
-                <li><a href="#" onClick={handlePlaceholderLink} className="hover:text-[#d4af37] transition-colors">MCTB Efficiency Lab</a></li>
-                <li><a href="#" onClick={handlePlaceholderLink} className="hover:text-[#d4af37] transition-colors">FUB Elite Sync</a></li>
-                <li><a href="#" onClick={handlePlaceholderLink} className="hover:text-[#d4af37] transition-colors">API Documentation</a></li>
-                <li><a href="#" onClick={handlePlaceholderLink} className="hover:text-[#d4af37] transition-colors">Security Audit 2026</a></li>
+              <ul className="space-y-4 text-[11px] font-black text-white/50 uppercase tracking-widest">
+                {CRMS.map(c => <li key={c.id} className="hover:text-[#d4af37] transition-colors cursor-pointer">{c.name}</li>)}
               </ul>
             </div>
           </div>
-
           <div className="pt-10 border-t border-white/5 flex flex-col lg:flex-row items-center justify-between gap-6">
-            <div className="text-[10px] text-white font-black uppercase tracking-[0.4em] flex items-center gap-4">
-              <span>© 2026 ARGUS ELITE. ALL RIGHTS RESERVED.</span>
+            <div className="text-[9px] text-white/20 font-black uppercase tracking-[0.4em]">
+              © 2026 ARGUS ELITE. TECHNOLOGY FOR THE TOP 1%.
             </div>
-            <div className="flex items-center gap-8 text-[11px] font-black text-white uppercase tracking-widest">
-              <div className="flex items-center gap-2">
-                <ShieldCheck size={14} className="text-emerald-500" />
-                PCI-DSS LEVEL 1 COMPLIANT
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-emerald-500" />
-                SYSTEMS OPERATIONAL
-              </div>
-            </div>
-            <div className="flex items-center gap-2 text-[10px] text-white font-black uppercase tracking-widest">
-              DESIGNED FOR THE TOP 1% OF REAL ESTATE PROFESSIONALS
+            <div className="flex items-center gap-8 text-[9px] font-black text-white/40 uppercase tracking-[0.2em]">
+              <span className="flex items-center gap-2"><ShieldCheck size={12} className="text-emerald-500" /> PCI-DSS LEVEL 1</span>
+              <span className="flex items-center gap-2"><Globe size={12} className="text-blue-500" /> ISO 27001</span>
             </div>
           </div>
         </footer>

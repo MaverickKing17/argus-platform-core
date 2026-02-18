@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Phone, Mail, CheckCircle, ExternalLink, ShieldCheck, Share2, RefreshCw, AlertCircle, Clock, Zap, Cpu, Target } from 'lucide-react';
+import { Phone, Mail, CheckCircle, ExternalLink, ShieldCheck, Share2, RefreshCw, AlertCircle, Clock, Zap, Cpu, Target, Wand2, Send, History } from 'lucide-react';
 import { Lead } from '../types';
 import { analyzeLeadSentiment } from '../services/geminiService';
 
@@ -16,6 +16,7 @@ const LeadDetail: React.FC<LeadDetailProps> = ({ lead }) => {
   const [qualificationScore, setQualificationScore] = useState<number>(0);
   const [aiInsights, setAiInsights] = useState<{ summary: string; recommendedAction: string } | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState<boolean>(false);
+  const [showDraft, setShowDraft] = useState(false);
   const syncTimeoutRef = useRef<number | null>(null);
 
   useEffect(() => {
@@ -24,6 +25,7 @@ const LeadDetail: React.FC<LeadDetailProps> = ({ lead }) => {
       setLastSynced(null);
       setQualificationScore(lead.qualificationScore);
       setAiInsights(null);
+      setShowDraft(false);
       
       const timeout = window.setTimeout(() => {
         handleSync();
@@ -77,44 +79,9 @@ const LeadDetail: React.FC<LeadDetailProps> = ({ lead }) => {
     );
   }
 
-  const getStatusConfig = () => {
-    switch (syncStatus) {
-      case 'syncing':
-        return {
-          label: 'Verifying Integrity...',
-          color: 'text-[#d4af37]',
-          bg: 'bg-[#d4af37]/10',
-          dot: 'bg-[#d4af37]',
-          icon: <RefreshCw size={12} className="animate-spin" />
-        };
-      case 'synced':
-        return {
-          label: 'Secured in Vault',
-          color: 'text-emerald-400',
-          bg: 'bg-emerald-500/10',
-          dot: 'bg-emerald-500',
-          icon: <CheckCircle size={12} />
-        };
-      case 'error':
-        return {
-          label: 'Handshake Failed',
-          color: 'text-red-400',
-          bg: 'bg-red-500/10',
-          dot: 'bg-red-400',
-          icon: <AlertCircle size={12} />
-        };
-      default:
-        return {
-          label: 'Awaiting Command',
-          color: 'text-white/60',
-          bg: 'bg-white/5',
-          dot: 'bg-white/40',
-          icon: null
-        };
-    }
-  };
-
-  const status = getStatusConfig();
+  const status = syncStatus === 'syncing' ? { label: 'Syncing FUB...', color: 'text-[#d4af37]', icon: <RefreshCw size={12} className="animate-spin" /> } :
+                 syncStatus === 'synced' ? { label: 'CRM Sync Locked', color: 'text-emerald-400', icon: <CheckCircle size={12} /> } :
+                 { label: 'Awaiting Handshake', color: 'text-white/40', icon: null };
 
   return (
     <div className="flex flex-col h-full gap-6">
@@ -123,10 +90,10 @@ const LeadDetail: React.FC<LeadDetailProps> = ({ lead }) => {
         
         <div className="flex items-center justify-between">
           <div className="flex flex-col">
-            <h3 className="text-2xl font-bold text-white tracking-tighter">Elite Profile</h3>
+            <h3 className="text-2xl font-bold text-white tracking-tighter">Asset Profiler</h3>
             <span className="text-[11px] text-[#d4af37] uppercase tracking-[0.3em] font-black">{lead.name}</span>
           </div>
-          <div className="w-14 h-14 rounded-2xl p-[1px] gold-gradient shadow-xl group hover:rotate-3 transition-transform cursor-pointer">
+          <div className="w-14 h-14 rounded-2xl p-[1px] gold-gradient shadow-xl">
             <div className="w-full h-full rounded-2xl bg-black flex items-center justify-center overflow-hidden border border-black">
               <img src={`https://picsum.photos/seed/${lead.id}/140/140`} alt="Avatar" className="w-full h-full object-cover grayscale brightness-150" />
             </div>
@@ -134,21 +101,14 @@ const LeadDetail: React.FC<LeadDetailProps> = ({ lead }) => {
         </div>
 
         <div className="space-y-5">
-          <div className="flex flex-col gap-3 p-5 bg-white/5 rounded-2xl border border-white/10 group hover:border-[#d4af37]/30 transition-all duration-500">
-            <span className="text-[10px] text-gray-400 uppercase tracking-[0.2em] font-black">Asset Parameters</span>
+          <div className="flex flex-col gap-3 p-5 bg-white/5 rounded-2xl border border-white/10">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <Phone size={16} className="text-[#d4af37]" />
-                <span className="text-sm font-bold tracking-tight text-white">{lead.phone}</span>
-              </div>
+              <span className="text-sm font-bold tracking-tight text-white">{lead.phone}</span>
               <span className="text-[10px] px-3 py-1 rounded-lg bg-[#d4af37]/20 text-[#d4af37] border border-[#d4af37]/30 font-black uppercase tracking-widest">
                 {lead.propertyType}
               </span>
             </div>
-            <div className="flex items-center gap-3">
-              <Mail size={16} className="text-[#d4af37]" />
-              <span className="text-sm font-bold tracking-tight text-white">{lead.email}</span>
-            </div>
+            <span className="text-sm font-bold tracking-tight text-white/60">{lead.email}</span>
           </div>
 
           <div className="flex flex-col items-center py-5 bg-[radial-gradient(circle_at_center,_rgba(212,175,55,0.08),_transparent_70%)] relative">
@@ -160,124 +120,78 @@ const LeadDetail: React.FC<LeadDetailProps> = ({ lead }) => {
                 </div>
               </div>
             )}
-            <div className="relative w-48 h-48 flex items-center justify-center">
-              <svg className="w-full h-full transform -rotate-90 filter drop-shadow-[0_0_20px_rgba(212,175,55,0.15)]">
-                <circle
-                  cx="96" cy="96" r="84"
-                  fill="transparent"
-                  stroke="currentColor"
-                  strokeWidth="5"
-                  className="text-white/10"
-                />
-                <circle
-                  cx="96" cy="96" r="84"
-                  fill="transparent"
-                  stroke="currentColor"
-                  strokeWidth="5"
-                  strokeDasharray={527}
-                  strokeDashoffset={527 - (527 * qualificationScore) / 100}
-                  strokeLinecap="round"
-                  className="text-[#d4af37] transition-all duration-1000 ease-out"
-                />
+            <div className="relative w-40 h-40 flex items-center justify-center">
+              <svg className="w-full h-full transform -rotate-90">
+                <circle cx="80" cy="80" r="70" fill="transparent" stroke="currentColor" strokeWidth="4" className="text-white/10" />
+                <circle cx="80" cy="80" r="70" fill="transparent" stroke="currentColor" strokeWidth="4" strokeDasharray={440} strokeDashoffset={440 - (440 * qualificationScore) / 100} strokeLinecap="round" className="text-[#d4af37] transition-all duration-1000 ease-out" />
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="text-5xl font-bold text-white tracking-tighter">{qualificationScore}%</span>
-                <span className="text-[10px] text-[#d4af37] uppercase tracking-[0.4em] font-black mt-1">Qualified</span>
+                <span className="text-4xl font-bold text-white tracking-tighter">{qualificationScore}%</span>
+                <span className="text-[9px] text-[#d4af37] uppercase tracking-[0.4em] font-black">Qualified</span>
               </div>
             </div>
-            <p className="text-[10px] text-white mt-4 uppercase tracking-[0.2em] flex items-center gap-2 font-bold bg-white/5 px-4 py-1.5 rounded-full border border-white/10">
-              <ShieldCheck size={14} className="text-emerald-500" />
-              Verified Integrity
-            </p>
           </div>
 
           {aiInsights && (
-            <div className="p-5 bg-[#d4af37]/5 rounded-2xl border border-[#d4af37]/20 space-y-3 animate-fade-in-up">
+            <div className="p-5 bg-white/5 rounded-2xl border border-white/10 space-y-3">
               <div className="flex items-center gap-2">
                 <Zap size={14} className="text-[#d4af37]" />
-                <span className="text-[10px] font-black text-[#d4af37] uppercase tracking-widest">Tactical Intelligence</span>
+                <span className="text-[10px] font-black text-[#d4af37] uppercase tracking-widest">Intelligence Report</span>
               </div>
-              <p className="text-xs text-white/80 italic font-medium leading-relaxed">
-                "{aiInsights.summary}"
-              </p>
-              <div className="flex items-start gap-2 pt-2 border-t border-[#d4af37]/10">
-                <Target size={12} className="text-white mt-0.5" />
-                <p className="text-[10px] font-black text-white uppercase tracking-tighter">
-                  Recommendation: <span className="text-[#d4af37]">{aiInsights.recommendedAction}</span>
-                </p>
-              </div>
+              <p className="text-xs text-white/80 italic leading-relaxed">"{aiInsights.summary}"</p>
+              
+              {/* MONEY MAKING FEATURE: Concierge Email Draft */}
+              {!showDraft ? (
+                <button 
+                  onClick={() => setShowDraft(true)}
+                  className="w-full py-3 bg-[#d4af37]/10 border border-[#d4af37]/20 rounded-xl text-[#d4af37] text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-[#d4af37]/20 transition-all"
+                >
+                  <Wand2 size={14} /> Generate Elite Concierge Outreach
+                </button>
+              ) : (
+                <div className="bg-black/60 p-4 rounded-xl border border-[#d4af37]/20 space-y-3 animate-fade-in-up">
+                  <p className="text-[10px] text-white/50 leading-relaxed font-medium">
+                    "Sebastian, I’ve just completed a tactical analysis of the Penthouse viewing schedules. I can secure a private showing Tuesday at 4:15 PM before the general broker open. Shall I finalize the handshake?"
+                  </p>
+                  <button className="w-full py-2.5 gold-gradient rounded-lg text-black text-[9px] font-black uppercase tracking-widest flex items-center justify-center gap-2">
+                    <Send size={12} fill="black" /> Send to {lead.name}
+                  </button>
+                </div>
+              )}
             </div>
           )}
         </div>
 
-        <div className="space-y-4">
-          <div className={`flex items-center justify-center gap-3 py-4 rounded-2xl border text-[11px] font-black tracking-[0.2em] uppercase transition-all duration-700 ${lead.caslVerified ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' : 'bg-red-500/10 border-red-500/30 text-red-400'}`}>
-            <ShieldCheck size={16} strokeWidth={2.5} />
-            CASL Handshake Valid
+        <div className="space-y-3 pt-4 border-t border-white/10">
+          <button className="w-full py-4 gold-gradient text-black font-black rounded-2xl flex items-center justify-center gap-2 shadow-2xl hover:scale-[1.02] transition-all uppercase text-[11px] tracking-widest">
+            <Phone size={18} fill="black" /> Initialize Instant Link
+          </button>
+          <div className="grid grid-cols-2 gap-3">
+             <button className="py-3 bg-white/5 text-white border border-white/10 font-bold rounded-xl text-[10px] uppercase tracking-widest hover:bg-white/10 transition-all flex items-center justify-center gap-2">
+               <History size={14} /> Interaction Log
+             </button>
+             <button className="py-3 bg-white/5 text-white border border-white/10 font-bold rounded-xl text-[10px] uppercase tracking-widest hover:bg-white/10 transition-all flex items-center justify-center gap-2">
+               <Share2 size={14} /> Transfer Case
+             </button>
           </div>
-
-          <button className="w-full py-4.5 gold-gradient text-black font-black rounded-2xl flex items-center justify-center gap-2 shadow-[0_12px_40px_rgba(212,175,55,0.3)] hover:shadow-[0_20px_50px_rgba(212,175,55,0.5)] hover:-translate-y-1 transition-all duration-300 uppercase text-xs tracking-[0.2em]">
-            <Phone size={18} fill="black" />
-            Initialize Link
-          </button>
-
-          <button className="w-full py-4.5 bg-white/5 text-white border border-white/10 font-black rounded-2xl flex items-center justify-center gap-2 hover:bg-white/10 hover:border-white/20 transition-all duration-300 uppercase text-[11px] tracking-[0.2em]">
-            <Share2 size={16} />
-            Transfer Assets
-          </button>
         </div>
       </div>
 
-      <div className="glass rounded-3xl p-6 flex flex-col gap-5 border-white/10 shadow-2xl bg-white/[0.01]">
+      <div className="glass rounded-3xl p-6 flex flex-col gap-4 border-white/10">
         <div className="flex items-center justify-between">
-          <div className="flex flex-col">
-            <span className="text-[11px] font-black text-gray-400 uppercase tracking-widest mb-2">Sync Protocol</span>
-            <div className="flex items-center gap-3 transition-all duration-500">
-              <div className={`p-2 rounded-xl ${status.bg} ${status.color} border border-white/5`}>
-                {status.icon || <RefreshCw size={14} />}
-              </div>
-              <div className="flex flex-col">
-                <span className={`text-sm font-bold tracking-tight ${status.color}`}>
-                  {status.label}
-                </span>
-                {lastSynced && syncStatus === 'synced' && (
-                  <span className="text-[10px] text-gray-500 flex items-center gap-1 font-bold">
-                    <Clock size={11} /> {lastSynced}
-                  </span>
-                )}
-              </div>
-            </div>
-          </div>
-          
-          <div className="flex gap-2">
-            {syncStatus === 'error' && (
-              <button 
-                onClick={handleSync}
-                className="px-4 py-2 rounded-xl bg-red-500/20 border border-red-500/30 text-red-400 text-[10px] font-black uppercase tracking-widest hover:bg-red-500/30 transition-all"
-              >
-                Retry
-              </button>
-            )}
-            <button 
-              onClick={() => { handleSync(); performAiDeepScan(); }}
-              disabled={syncStatus === 'syncing' || isAnalyzing}
-              className={`w-12 h-12 rounded-2xl border border-white/10 flex items-center justify-center transition-all duration-500 relative group
-                ${(syncStatus === 'syncing' || isAnalyzing) ? 'opacity-50 cursor-not-allowed' : 'hover:bg-white/10 hover:border-[#d4af37]/50 shadow-inner'}`}
-            >
-              <div className={`w-4 h-4 rounded-full ${status.dot} transition-colors duration-500 ${(syncStatus === 'syncing' || isAnalyzing) ? 'animate-pulse scale-110 shadow-[0_0_15px_rgba(212,175,55,0.6)]' : 'shadow-[0_0_10px_rgba(0,0,0,0.8)]'}`} />
-            </button>
-          </div>
+           <div className="flex items-center gap-2">
+             <div className="p-2 rounded-lg bg-white/5 border border-white/10 text-[#d4af37]">
+               {status.icon}
+             </div>
+             <span className={`text-[10px] font-black uppercase tracking-widest ${status.color}`}>
+               {status.label}
+             </span>
+           </div>
+           {lastSynced && <span className="text-[9px] font-bold text-white/20">{lastSynced}</span>}
         </div>
-        
-        <div className="flex items-center justify-between border-t border-white/10 pt-5">
-          <div className="flex flex-col">
-            <span className="text-[11px] font-black text-white uppercase tracking-[0.2em]">End-to-End Encryption</span>
-            <span className="text-[10px] text-emerald-500 font-black uppercase mt-1 tracking-tighter">FUB Secure Node Active</span>
-          </div>
-          <div className="w-12 h-6 bg-emerald-500/20 rounded-full p-1.5 flex justify-end border border-emerald-500/30 shadow-[inset_0_0_10px_rgba(16,185,129,0.2)]">
-            <div className="w-3 h-3 bg-emerald-500 rounded-full shadow-[0_0_8px_#10b981]" />
-          </div>
-        </div>
+        <button onClick={handleSync} className="w-full py-3 bg-white/5 border border-white/10 rounded-xl text-white/40 text-[10px] font-black uppercase tracking-widest hover:text-white transition-colors">
+          Force Global CRM Flush
+        </button>
       </div>
     </div>
   );
