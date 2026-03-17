@@ -1,6 +1,5 @@
-
 import React, { useState, useEffect, useRef } from 'react';
-import { Phone, Mail, CheckCircle, ExternalLink, ShieldCheck, Share2, RefreshCw, AlertCircle, Clock, Zap, Cpu, Target, Wand2, Send, History } from 'lucide-react';
+import { Phone, CheckCircle, ShieldCheck, RefreshCw, Zap, Cpu, Wand2, Send, History, Landmark, AlertCircle, TrendingUp, Fingerprint, Lock } from 'lucide-react';
 import { Lead } from '../types';
 import { analyzeLeadSentiment } from '../services/geminiService';
 
@@ -8,153 +7,117 @@ interface LeadDetailProps {
   lead: Lead | null;
 }
 
-type SyncStatus = 'syncing' | 'synced' | 'error' | 'idle';
-
 const LeadDetail: React.FC<LeadDetailProps> = ({ lead }) => {
-  const [syncStatus, setSyncStatus] = useState<SyncStatus>('idle');
-  const [lastSynced, setLastSynced] = useState<string | null>(null);
+  const [syncStatus, setSyncStatus] = useState<'syncing' | 'synced' | 'idle'>('idle');
   const [qualificationScore, setQualificationScore] = useState<number>(0);
   const [aiInsights, setAiInsights] = useState<{ summary: string; recommendedAction: string } | null>(null);
-  const [isAnalyzing, setIsAnalyzing] = useState<boolean>(false);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [showDraft, setShowDraft] = useState(false);
-  const syncTimeoutRef = useRef<number | null>(null);
 
   useEffect(() => {
     if (lead) {
-      setSyncStatus('idle');
-      setLastSynced(null);
       setQualificationScore(lead.qualificationScore);
       setAiInsights(null);
       setShowDraft(false);
-      
-      const timeout = window.setTimeout(() => {
-        handleSync();
-        performAiDeepScan();
-      }, 800);
-      return () => window.clearTimeout(timeout);
+      setIsAnalyzing(true);
+      const timer = setTimeout(() => performAiDeepScan(), 1000);
+      return () => clearTimeout(timer);
     }
   }, [lead]);
 
   const performAiDeepScan = async () => {
     if (!lead) return;
-    setIsAnalyzing(true);
     try {
       const result = await analyzeLeadSentiment(lead.lastMessage);
       if (result) {
         setQualificationScore(result.score);
-        setAiInsights({
-          summary: result.summary,
-          recommendedAction: result.recommendedAction
-        });
+        setAiInsights({ summary: result.summary, recommendedAction: result.recommendedAction });
       }
-    } catch (err) {
-      console.error("Deep scan failed", err);
-    } finally {
-      setIsAnalyzing(false);
-    }
+    } catch (err) { console.error(err); } finally { setIsAnalyzing(false); }
   };
 
-  const handleSync = () => {
-    if (syncTimeoutRef.current) window.clearTimeout(syncTimeoutRef.current);
-    setSyncStatus('syncing');
-    syncTimeoutRef.current = window.setTimeout(() => {
-      const success = Math.random() > 0.15;
-      if (success) {
-        setSyncStatus('synced');
-        setLastSynced(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
-      } else {
-        setSyncStatus('error');
-      }
-    }, 2800);
-  };
-
-  if (!lead) {
-    return (
-      <div className="glass h-full rounded-3xl flex items-center justify-center text-gray-500 italic p-10 border-dashed border-white/10 shadow-2xl">
-        <div className="flex flex-col items-center gap-4">
-          <ShieldCheck size={48} className="opacity-10 text-[#d4af37]" />
-          <span className="font-bold text-sm tracking-[0.3em] uppercase opacity-30">Select Prospect Identity</span>
-        </div>
+  if (!lead) return (
+    <div className="card-white h-full flex flex-col items-center justify-center p-20 text-center border-dashed border-2 border-gray-100 bg-white/50">
+      <div className="space-y-8 opacity-30">
+        <ShieldCheck size={64} className="mx-auto text-gray-400" strokeWidth={1} />
+        <p className="text-[12px] font-black uppercase tracking-[0.4em] text-gray-400 leading-loose">Identity Profile<br/>Awaiting Handshake</p>
       </div>
-    );
-  }
-
-  const status = syncStatus === 'syncing' ? { label: 'Syncing FUB...', color: 'text-[#d4af37]', icon: <RefreshCw size={12} className="animate-spin" /> } :
-                 syncStatus === 'synced' ? { label: 'CRM Sync Locked', color: 'text-emerald-400', icon: <CheckCircle size={12} /> } :
-                 { label: 'Awaiting Handshake', color: 'text-white/40', icon: null };
+    </div>
+  );
 
   return (
-    <div className="flex flex-col h-full gap-6">
-      <div className="glass rounded-3xl p-7 flex flex-col gap-7 border-white/10 shadow-2xl relative overflow-hidden bg-white/[0.01]">
-        <div className="absolute top-0 left-0 w-full h-1 gold-gradient opacity-30" />
-        
-        <div className="flex items-center justify-between">
-          <div className="flex flex-col">
-            <h3 className="text-2xl font-bold text-white tracking-tighter">Asset Profiler</h3>
-            <span className="text-[11px] text-[#d4af37] uppercase tracking-[0.3em] font-black">{lead.name}</span>
+    <div className="space-y-10 animate-fade-in">
+      <div className="card-white p-12 space-y-12">
+        <div className="flex justify-between items-start">
+          <div className="space-y-3">
+            <h3 className="text-3xl font-semibold text-[#1A1A1A] tracking-tight">{lead.name}</h3>
+            <p className="text-[11px] font-black text-[#C5A059] uppercase tracking-[0.4em]">{lead.propertyType}</p>
           </div>
-          <div className="w-14 h-14 rounded-2xl p-[1px] gold-gradient shadow-xl">
-            <div className="w-full h-full rounded-2xl bg-black flex items-center justify-center overflow-hidden border border-black">
-              <img src={`https://picsum.photos/seed/${lead.id}/140/140`} alt="Avatar" className="w-full h-full object-cover grayscale brightness-150" />
-            </div>
+          <div className="w-20 h-20 rounded-2xl bg-[#F7F6F3] border border-gray-100 overflow-hidden shadow-inner flex-shrink-0">
+            <img src={`https://picsum.photos/seed/${lead.id}/300`} alt="Lead Identity" className="w-full h-full object-cover grayscale opacity-90 hover:opacity-100 transition-opacity" />
           </div>
         </div>
 
-        <div className="space-y-5">
-          <div className="flex flex-col gap-3 p-5 bg-white/5 rounded-2xl border border-white/10">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-bold tracking-tight text-white">{lead.phone}</span>
-              <span className="text-[10px] px-3 py-1 rounded-lg bg-[#d4af37]/20 text-[#d4af37] border border-[#d4af37]/30 font-black uppercase tracking-widest">
-                {lead.propertyType}
-              </span>
-            </div>
-            <span className="text-sm font-bold tracking-tight text-white/60">{lead.email}</span>
+        <div className="space-y-10">
+          <div className="p-10 bg-[#F7F6F3] rounded-2xl space-y-5 border border-gray-50 shadow-inner relative overflow-hidden">
+             <div className="absolute top-0 right-0 p-2 opacity-5">
+               <Fingerprint size={80} />
+             </div>
+             <div className="flex justify-between items-center relative z-10">
+               <span className="text-base font-semibold text-[#1A1A1A]">{lead.phone}</span>
+               {lead.sentiment === 'Hot' && (
+                 <span className="bg-[#9B1B1B] text-white px-4 py-2 rounded-md flex items-center gap-2 text-[10px] font-black uppercase tracking-widest shadow-sm animate-pulse">
+                   <AlertCircle size={12} /> Urgent Alert
+                 </span>
+               )}
+             </div>
+             <p className="text-sm text-gray-400 font-medium truncate relative z-10">{lead.email}</p>
+             <div className="pt-4 flex items-center gap-2 text-[9px] font-bold text-gray-300 uppercase tracking-widest relative z-10">
+               <Lock size={10} /> Verification Hash: <span className="font-mono">0x7F...3B92</span>
+             </div>
           </div>
 
-          <div className="flex flex-col items-center py-5 bg-[radial-gradient(circle_at_center,_rgba(212,175,55,0.08),_transparent_70%)] relative">
-            {isAnalyzing && (
-              <div className="absolute inset-0 flex items-center justify-center z-20 bg-black/40 backdrop-blur-[2px] rounded-3xl">
-                <div className="flex flex-col items-center gap-2">
-                  <Cpu className="text-[#d4af37] animate-pulse" size={32} />
-                  <span className="text-[9px] font-black text-[#d4af37] uppercase tracking-[0.4em]">Deep AI Scan...</span>
-                </div>
-              </div>
-            )}
-            <div className="relative w-40 h-40 flex items-center justify-center">
-              <svg className="w-full h-full transform -rotate-90">
-                <circle cx="80" cy="80" r="70" fill="transparent" stroke="currentColor" strokeWidth="4" className="text-white/10" />
-                <circle cx="80" cy="80" r="70" fill="transparent" stroke="currentColor" strokeWidth="4" strokeDasharray={440} strokeDashoffset={440 - (440 * qualificationScore) / 100} strokeLinecap="round" className="text-[#d4af37] transition-all duration-1000 ease-out" />
-              </svg>
-              <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="text-4xl font-bold text-white tracking-tighter">{qualificationScore}%</span>
-                <span className="text-[9px] text-[#d4af37] uppercase tracking-[0.4em] font-black">Qualified</span>
-              </div>
+          <div className="grid grid-cols-2 gap-8">
+            <div className="p-8 bg-white border border-gray-100 rounded-2xl shadow-sm space-y-4">
+               <div className="p-3 bg-[#C5A059]/10 rounded-xl text-[#C5A059] w-fit">
+                 <Landmark size={22} />
+               </div>
+               <p className="text-[11px] font-black text-gray-400 uppercase tracking-widest">Scope Index</p>
+               <p className="text-xl font-bold text-[#1A1A1A] tracking-tight">$5.2M Est.</p>
+            </div>
+            <div className="p-8 bg-white border border-gray-100 rounded-2xl shadow-sm space-y-4">
+               <div className="p-3 bg-[#2D5A27]/10 rounded-xl text-[#2D5A27] w-fit">
+                 <TrendingUp size={22} />
+               </div>
+               <p className="text-[11px] font-black text-gray-400 uppercase tracking-widest">Status</p>
+               <span className="bg-[#2D5A27] text-white px-4 py-1.5 rounded-md text-[10px] font-bold uppercase tracking-widest inline-block shadow-sm">{qualificationScore}% Qualified</span>
             </div>
           </div>
 
-          {aiInsights && (
-            <div className="p-5 bg-white/5 rounded-2xl border border-white/10 space-y-3">
-              <div className="flex items-center gap-2">
-                <Zap size={14} className="text-[#d4af37]" />
-                <span className="text-[10px] font-black text-[#d4af37] uppercase tracking-widest">Intelligence Report</span>
+          {isAnalyzing ? (
+            <div className="p-16 flex flex-col items-center gap-6 bg-gray-50/30 rounded-2xl border border-gray-100">
+              <RefreshCw size={32} className="animate-spin text-[#C5A059]" />
+              <p className="text-[11px] font-black uppercase tracking-[0.3em] text-gray-400">Quantum Intelligence Scan...</p>
+            </div>
+          ) : aiInsights && (
+            <div className="p-10 bg-[#C5A059]/5 rounded-2xl border border-[#C5A059]/10 space-y-10">
+              <div className="flex items-center gap-3">
+                <Zap size={18} className="text-[#C5A059]" />
+                <span className="text-[11px] font-black text-[#C5A059] uppercase tracking-widest">Intelligence Report</span>
               </div>
-              <p className="text-xs text-white/80 italic leading-relaxed">"{aiInsights.summary}"</p>
-              
-              {/* MONEY MAKING FEATURE: Concierge Email Draft */}
+              <p className="text-sm text-gray-600 font-medium leading-relaxed italic border-l-2 border-[#C5A059]/30 pl-6">"{aiInsights.summary}"</p>
               {!showDraft ? (
                 <button 
-                  onClick={() => setShowDraft(true)}
-                  className="w-full py-3 bg-[#d4af37]/10 border border-[#d4af37]/20 rounded-xl text-[#d4af37] text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-[#d4af37]/20 transition-all"
+                  onClick={() => setShowDraft(true)} 
+                  className="w-full py-4 bg-white border border-[#C5A059]/40 rounded-xl text-[#1A1A1A] text-[11px] font-black uppercase tracking-[0.2em] shadow-sm hover:bg-gray-50 transition-all"
                 >
-                  <Wand2 size={14} /> Generate Elite Concierge Outreach
+                   Draft Executive Outreach
                 </button>
               ) : (
-                <div className="bg-black/60 p-4 rounded-xl border border-[#d4af37]/20 space-y-3 animate-fade-in-up">
-                  <p className="text-[10px] text-white/50 leading-relaxed font-medium">
-                    "Sebastian, I’ve just completed a tactical analysis of the Penthouse viewing schedules. I can secure a private showing Tuesday at 4:15 PM before the general broker open. Shall I finalize the handshake?"
-                  </p>
-                  <button className="w-full py-2.5 gold-gradient rounded-lg text-black text-[9px] font-black uppercase tracking-widest flex items-center justify-center gap-2">
-                    <Send size={12} fill="black" /> Send to {lead.name}
+                <div className="bg-white p-8 rounded-xl border border-gray-100 space-y-8 shadow-sm animate-fade-in">
+                  <p className="text-sm text-[#1A1A1A] font-medium leading-relaxed">"Sebastian, private property handover verified for Thursday at 4:15. Acknowledge stream to secure access codes for your principal."</p>
+                  <button className="w-full bg-[#C5A059] text-[#1A1A1A] py-5 rounded-xl text-[11px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-4 shadow-md hover:scale-[1.01] transition-all">
+                    <Send size={18} /> Deploy Intelligence Link
                   </button>
                 </div>
               )}
@@ -162,36 +125,24 @@ const LeadDetail: React.FC<LeadDetailProps> = ({ lead }) => {
           )}
         </div>
 
-        <div className="space-y-3 pt-4 border-t border-white/10">
-          <button className="w-full py-4 gold-gradient text-black font-black rounded-2xl flex items-center justify-center gap-2 shadow-2xl hover:scale-[1.02] transition-all uppercase text-[11px] tracking-widest">
-            <Phone size={18} fill="black" /> Initialize Instant Link
+        <div className="pt-10 space-y-6">
+          <button className="w-full bg-[#C5A059] text-[#1A1A1A] py-6 rounded-2xl font-black uppercase text-[12px] tracking-[0.3em] shadow-xl flex items-center justify-center gap-5 hover:scale-[1.02] active:scale-95 transition-all">
+            <Phone size={22} fill="#1A1A1A" /> Initialize Live Session
           </button>
-          <div className="grid grid-cols-2 gap-3">
-             <button className="py-3 bg-white/5 text-white border border-white/10 font-bold rounded-xl text-[10px] uppercase tracking-widest hover:bg-white/10 transition-all flex items-center justify-center gap-2">
-               <History size={14} /> Interaction Log
-             </button>
-             <button className="py-3 bg-white/5 text-white border border-white/10 font-bold rounded-xl text-[10px] uppercase tracking-widest hover:bg-white/10 transition-all flex items-center justify-center gap-2">
-               <Share2 size={14} /> Transfer Case
-             </button>
+          <div className="grid grid-cols-2 gap-6">
+             <button className="py-5 bg-[#F7F6F3] border border-gray-100 rounded-xl text-[11px] font-bold uppercase text-gray-400 tracking-widest hover:text-[#1A1A1A] hover:bg-white transition-all">Case Intel Log</button>
+             <button className="py-5 bg-[#F7F6F3] border border-gray-100 rounded-xl text-[11px] font-bold uppercase text-gray-400 tracking-widest hover:text-[#1A1A1A] hover:bg-white transition-all">Handover Lead</button>
           </div>
         </div>
       </div>
 
-      <div className="glass rounded-3xl p-6 flex flex-col gap-4 border-white/10">
-        <div className="flex items-center justify-between">
-           <div className="flex items-center gap-2">
-             <div className="p-2 rounded-lg bg-white/5 border border-white/10 text-[#d4af37]">
-               {status.icon}
-             </div>
-             <span className={`text-[10px] font-black uppercase tracking-widest ${status.color}`}>
-               {status.label}
-             </span>
-           </div>
-           {lastSynced && <span className="text-[9px] font-bold text-white/20">{lastSynced}</span>}
-        </div>
-        <button onClick={handleSync} className="w-full py-3 bg-white/5 border border-white/10 rounded-xl text-white/40 text-[10px] font-black uppercase tracking-widest hover:text-white transition-colors">
-          Force Global CRM Flush
-        </button>
+      {/* Sync Status Footer */}
+      <div className="card-white px-10 py-6 flex items-center justify-between border-l-4 border-l-[#2D5A27] bg-white transition-all hover:shadow-md">
+         <div className="flex items-center gap-4">
+           <div className="w-3 h-3 rounded-full bg-[#2D5A27] shadow-[0_0_10px_rgba(45,90,39,0.5)]" />
+           <span className="text-[11px] font-black text-gray-400 uppercase tracking-widest">Active Synchronization Active</span>
+         </div>
+         <button className="text-[11px] font-black text-[#C5A059] uppercase tracking-[0.2em] hover:underline transition-all">Manual Pulse</button>
       </div>
     </div>
   );

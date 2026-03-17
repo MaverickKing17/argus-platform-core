@@ -1,82 +1,60 @@
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ARGUS Sales Closer | Elite Real Estate AI</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>ARGUS Control | Executive Intelligence</title>
     <style>
       :root {
-        --segoe: "Segoe UI", "Segoe UI Web (West European)", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", sans-serif;
+        --font-main: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        --bg-sand: #F7F6F3;
+        --text-charcoal: #1A1A1A;
+        --accent-gold: #C5A059;
+        --sidebar-neutral: #EDE9E3;
+        --qualified-green: #2D5A27;
+        --urgent-burgundy: #9B1B1B;
       }
       body {
-        font-family: var(--segoe);
-        background-color: #020202;
-        color: #ffffff;
+        font-family: var(--font-main);
+        background-color: var(--bg-sand);
+        color: var(--text-charcoal);
         -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
         margin: 0;
         overflow-x: hidden;
       }
-      .font-luxury {
-        font-family: var(--segoe);
-        font-weight: 700;
-        letter-spacing: -0.02em;
+      /* 2026 Executive Minimalist Card Design */
+      .card-white {
+        background-color: #FFFFFF;
+        border-radius: 12px;
+        box-shadow: 0 2px 12px -1px rgba(0, 0, 0, 0.04);
+        border: 1px solid rgba(0, 0, 0, 0.03);
       }
-      .glass {
-        background: rgba(15, 15, 15, 0.85);
-        backdrop-filter: blur(20px);
-        border: 1px solid rgba(255, 255, 255, 0.15);
+      /* Solid Luxury Accents */
+      .btn-gold {
+        background-color: var(--accent-gold);
+        color: #1A1A1A; /* High contrast: Charcoal on Gold */
+        transition: all 0.2s ease;
+        border-radius: 8px;
+        font-weight: 600;
       }
-      .gold-gradient {
-        background: linear-gradient(135deg, #d4af37 0%, #f9e29b 50%, #b8860b 100%);
+      .btn-gold:hover {
+        filter: brightness(1.05);
       }
-      .gold-text {
-        background: linear-gradient(135deg, #d4af37 0%, #f9e29b 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
+      .animate-fade-in {
+        animation: fadeIn 0.4s ease-out forwards;
       }
-      .pulse-gold {
-        box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.4);
-        animation: pulse 2s infinite;
-      }
-      @keyframes pulse {
-        0% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.4); }
-        70% { box-shadow: 0 0 0 10px rgba(212, 175, 55, 0); }
-        100% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0); }
-      }
-      /* Custom Scrollbar */
-      ::-webkit-scrollbar { width: 8px; }
-      ::-webkit-scrollbar-track { background: rgba(0,0,0,0.3); }
-      ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.15); border-radius: 10px; }
-      ::-webkit-scrollbar-thumb:hover { background: rgba(212, 175, 55, 0.4); }
-
-      /* Animation primitives */
-      .animate-fade-in-up {
-        animation: fadeInUp 0.6s ease-out forwards;
-      }
-      @keyframes fadeInUp {
-        from { opacity: 0; transform: translateY(20px); }
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(8px); }
         to { opacity: 1; transform: translateY(0); }
       }
+      ::-webkit-scrollbar { width: 6px; }
+      ::-webkit-scrollbar-track { background: transparent; }
+      ::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.1); border-radius: 10px; }
     </style>
-    <script type="importmap">
-{
-  "imports": {
-    "react": "https://esm.sh/react@19.0.0",
-    "react-dom": "https://esm.sh/react-dom@19.0.0",
-    "react-dom/client": "https://esm.sh/react-dom@19.0.0/client",
-    "lucide-react": "https://esm.sh/lucide-react@0.460.0",
-    "@google/genai": "https://esm.sh/@google/genai@1.41.0",
-    "react/": "https://esm.sh/react@19.0.0/",
-    "react-dom/": "https://esm.sh/react-dom@19.0.0/"
-  }
-}
-</script>
-  </head>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
   <body>
     <div id="root"></div>
-    <script type="module" src="./index.tsx"></script>
+    <script type="module" src="/index.tsx"></script>
   </body>
 </html>

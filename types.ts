@@ -23,5 +23,16 @@ export enum ViewState {
   INSIGHTS = 'insights',
   VAULT = 'vault',
   RESULTS = 'results',
+  ANALYTICS = 'analytics',
   SETTINGS = 'settings'
+}
+
+export interface AgentPerformance {
+  id: string;
+  name: string;
+  gci: string;
+  dealsClosed: number;
+  conversionRate: number;
+  activeLeads: number;
+  avatar: string;
 }

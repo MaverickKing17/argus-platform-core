@@ -1,11 +1,9 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { MessageSquare, X, Send, Bot, User, Sparkles, Shield, ChevronDown, Landmark, RefreshCcw } from 'lucide-react';
 import { GoogleGenAI } from "@google/genai";
 
 const SYSTEM_INSTRUCTION = `You are the ARGUS Oracle, a sophisticated AI concierge with absolute mastery over Toronto's luxury property landscape. 
 You possess encyclopedic knowledge of enclaves such as Yorkville, The Bridle Path, Forest Hill, Rosedale, Lawrence Park, and the Waterfront. 
-Your insights cover historical price trajectories, architectural significance, elite school district prestige, and ultra-high-net-worth investor sentiment. 
 Your tone must be elite, precise, and authoritative. 
 Provide detailed, well-structured information, as if presenting a briefing to a billionaire investor or a top-tier agent like Barry Cohen. 
 Do not be conversational in a "chatty" way; be a high-end data source. 
@@ -14,7 +12,7 @@ Focus on exclusivity, prestige, and financial precision.`;
 const MarketChat: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<{ role: 'user' | 'model'; text: string }[]>([
-    { role: 'model', text: "Welcome to the ARGUS Oracle. I am prepared to provide tactical intelligence on Toronto's most prestigious real estate enclaves. How may I assist your strategy today?" }
+    { role: 'model', text: "Welcome to the ARGUS Oracle. Tactical intelligence streams are synchronized. How may I assist your principal's strategy today?" }
   ]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -35,9 +33,10 @@ const MarketChat: React.FC = () => {
     setIsTyping(true);
 
     try {
-      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
+      const apiKey = process.env.GEMINI_API_KEY || import.meta.env.VITE_GEMINI_API_KEY || '';
+      const ai = new GoogleGenAI({ apiKey });
       const chat = ai.chats.create({
-        model: 'gemini-3-flash-preview', // Switched to Flash for better quota limits
+        model: 'gemini-3-flash-preview',
         config: {
           systemInstruction: SYSTEM_INSTRUCTION,
           temperature: 0.7,
@@ -47,7 +46,6 @@ const MarketChat: React.FC = () => {
       const result = await chat.sendMessageStream({ message: userMessage });
       let fullText = '';
       
-      // Initialize an empty model message to stream into
       setMessages(prev => [...prev, { role: 'model', text: '' }]);
 
       for await (const chunk of result) {
@@ -63,8 +61,8 @@ const MarketChat: React.FC = () => {
       console.error("Oracle offline:", error);
       const isQuota = error.message?.includes("429") || error.status === 429;
       const errorText = isQuota 
-        ? "The Oracle is currently at maximum capacity processing global asset data. Tactical intelligence streams will resume shortly. Please retry in a few moments."
-        : "Connection to the Oracle disrupted. Security protocol suggests a manual refresh of the interface.";
+        ? "The Oracle is currently at maximum capacity. Tactical streams will resume shortly."
+        : "Connection to the Oracle disrupted. Re-initialize session.";
       
       setMessages(prev => [...prev, { role: 'model', text: errorText }]);
     } finally {
@@ -73,101 +71,79 @@ const MarketChat: React.FC = () => {
   };
 
   return (
-    <div className="fixed bottom-8 right-8 z-[100] font-luxury">
-      {/* Floating Trigger Button */}
+    <div className="fixed bottom-12 right-12 z-[100] font-luxury">
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="w-16 h-16 gold-gradient rounded-full shadow-[0_10px_40px_rgba(212,175,55,0.4)] flex items-center justify-center text-black hover:scale-110 transition-all duration-300 group relative pulse-gold"
+          className="w-20 h-20 bg-[#C5A059] rounded-full shadow-2xl flex items-center justify-center text-[#1A1A1A] hover:scale-110 transition-all duration-300 group relative"
         >
-          <div className="absolute inset-0 rounded-full border-2 border-[#d4af37] animate-ping opacity-20" />
-          <MessageSquare size={28} />
-          <span className="absolute -top-12 right-0 bg-black/80 backdrop-blur-md text-[#d4af37] text-[10px] font-black uppercase tracking-[0.2em] px-3 py-1.5 rounded-lg border border-[#d4af37]/30 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-2xl">
-            Query Oracle
+          <div className="absolute inset-0 rounded-full border-2 border-[#C5A059] animate-ping opacity-10" />
+          <MessageSquare size={32} />
+          <span className="absolute -top-12 right-0 bg-white text-[#1A1A1A] text-[10px] font-black uppercase tracking-[0.3em] px-5 py-2 rounded-lg border border-gray-100 shadow-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
+            Query Oracle Node
           </span>
         </button>
       )}
 
-      {/* Chat Window */}
       {isOpen && (
-        <div className="w-[420px] h-[600px] glass rounded-[2.5rem] border border-[#d4af37]/30 shadow-[0_20px_60px_rgba(0,0,0,0.8)] flex flex-col overflow-hidden animate-in slide-in-from-bottom-10 fade-in duration-500">
-          {/* Header */}
-          <div className="p-6 border-b border-white/10 flex items-center justify-between bg-white/[0.02]">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl gold-gradient flex items-center justify-center text-black shadow-lg">
-                <Landmark size={20} />
+        <div className="w-[480px] h-[680px] bg-white rounded-[2.5rem] border border-gray-100 shadow-[0_24px_100px_rgba(0,0,0,0.12)] flex flex-col overflow-hidden animate-in slide-in-from-bottom-12 fade-in duration-500">
+          <div className="p-8 border-b border-gray-100 flex items-center justify-between bg-[#F7F6F3]/50">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-xl bg-[#1A1A1A] flex items-center justify-center text-[#C5A059] shadow-lg">
+                <Landmark size={24} />
               </div>
               <div>
-                <h3 className="text-white font-bold text-lg tracking-tight">ARGUS Oracle</h3>
-                <div className="flex items-center gap-1.5">
-                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_5px_#10b981]" />
-                  <span className="text-[9px] text-gray-500 font-black uppercase tracking-[0.2em]">Encyclopedia Level Active</span>
+                <h3 className="text-[#1A1A1A] font-bold text-xl tracking-tight">ARGUS Oracle</h3>
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-[#2D5A27] shadow-[0_0_5px_#2D5A27]" />
+                  <span className="text-[10px] text-gray-400 font-black uppercase tracking-[0.3em]">Operational node v4.2</span>
                 </div>
               </div>
             </div>
             <button 
               onClick={() => setIsOpen(false)}
-              className="text-white/40 hover:text-white transition-colors"
+              className="text-gray-300 hover:text-[#1A1A1A] transition-colors p-2"
             >
-              <ChevronDown size={24} />
+              <ChevronDown size={28} />
             </button>
           </div>
 
-          {/* Messages Area */}
           <div 
             ref={scrollRef}
-            className="flex-1 overflow-y-auto p-6 space-y-6 scroll-smooth"
+            className="flex-1 overflow-y-auto p-10 space-y-10 scroll-smooth bg-white"
           >
             {messages.map((msg, i) => (
               <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                <div className={`flex gap-3 max-w-[85%] ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
-                  <div className={`w-8 h-8 rounded-lg flex-shrink-0 flex items-center justify-center ${msg.role === 'model' ? 'bg-[#d4af37]/10 text-[#d4af37] border border-[#d4af37]/20' : 'bg-white/10 text-white border border-white/10'}`}>
-                    {msg.role === 'model' ? <Bot size={16} /> : <User size={16} />}
+                <div className={`flex gap-5 max-w-[90%] ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
+                  <div className={`w-10 h-10 rounded-xl flex-shrink-0 flex items-center justify-center ${msg.role === 'model' ? 'bg-[#C5A059]/10 text-[#C5A059]' : 'bg-[#1A1A1A] text-white'}`}>
+                    {msg.role === 'model' ? <Bot size={20} /> : <User size={20} />}
                   </div>
-                  <div className={`p-4 rounded-2xl text-sm leading-relaxed ${msg.role === 'model' ? 'bg-white/[0.03] text-gray-200 font-medium' : 'bg-[#d4af37]/10 text-white font-bold border border-[#d4af37]/20 shadow-lg'}`}>
-                    {msg.text || (msg.role === 'model' && <div className="flex gap-1 items-center py-1"><div className="w-1 h-1 bg-[#d4af37] rounded-full animate-bounce" /><div className="w-1 h-1 bg-[#d4af37] rounded-full animate-bounce delay-75" /><div className="w-1 h-1 bg-[#d4af37] rounded-full animate-bounce delay-150" /></div>)}
+                  <div className={`p-6 rounded-2xl text-sm leading-relaxed ${msg.role === 'model' ? 'bg-[#F7F6F3] text-gray-700 font-medium' : 'bg-[#C5A059] text-[#1A1A1A] font-bold shadow-sm'}`}>
+                    {msg.text || (msg.role === 'model' && <div className="flex gap-1.5 items-center py-1"><div className="w-1.5 h-1.5 bg-[#C5A059] rounded-full animate-bounce" /><div className="w-1.5 h-1.5 bg-[#C5A059] rounded-full animate-bounce delay-75" /><div className="w-1.5 h-1.5 bg-[#C5A059] rounded-full animate-bounce delay-150" /></div>)}
                   </div>
                 </div>
               </div>
             ))}
-            {isTyping && !messages[messages.length-1].text && (
-               <div className="flex justify-start">
-                 <div className="flex gap-3 max-w-[85%]">
-                   <div className="w-8 h-8 rounded-lg flex-shrink-0 flex items-center justify-center bg-[#d4af37]/10 text-[#d4af37] border border-[#d4af37]/20">
-                     <Bot size={16} />
-                   </div>
-                   <div className="p-4 rounded-2xl bg-white/[0.03] text-gray-200 flex gap-1 items-center">
-                     <div className="w-1.5 h-1.5 bg-[#d4af37] rounded-full animate-bounce" />
-                     <div className="w-1.5 h-1.5 bg-[#d4af37] rounded-full animate-bounce [animation-delay:0.2s]" />
-                     <div className="w-1.5 h-1.5 bg-[#d4af37] rounded-full animate-bounce [animation-delay:0.4s]" />
-                   </div>
-                 </div>
-               </div>
-            )}
           </div>
 
-          {/* Input Area */}
-          <div className="p-6 border-t border-white/10 bg-black/40">
-            <div className="flex items-center gap-3 bg-white/5 border border-white/10 rounded-2xl p-2.5 focus-within:border-[#d4af37]/50 transition-all shadow-inner">
+          <div className="p-8 border-t border-gray-100 bg-[#F7F6F3]/30">
+            <div className="flex items-center gap-4 bg-white border border-gray-100 rounded-2xl p-3 focus-within:ring-1 focus-within:ring-[#C5A059]/30 transition-all shadow-inner">
               <input
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && handleSend()}
-                placeholder="Query market intel..."
-                className="flex-1 bg-transparent border-none outline-none text-white text-sm placeholder-white/20 px-3 font-medium"
+                placeholder="Request tactical market intel..."
+                className="flex-1 bg-transparent border-none outline-none text-[#1A1A1A] text-sm placeholder-gray-300 px-4 font-medium"
               />
               <button 
                 onClick={handleSend}
                 disabled={!input.trim() || isTyping}
-                className="w-10 h-10 rounded-xl gold-gradient flex items-center justify-center text-black shadow-lg disabled:opacity-30 disabled:grayscale transition-all hover:scale-105 active:scale-95"
+                className="w-12 h-12 rounded-xl bg-[#C5A059] flex items-center justify-center text-[#1A1A1A] shadow-md disabled:opacity-30 transition-all hover:scale-105 active:scale-95"
               >
-                <Send size={18} fill="black" />
+                <Send size={20} />
               </button>
             </div>
-            <p className="text-[9px] text-white/20 font-black uppercase tracking-[0.3em] mt-3 text-center">
-              Argus Phase-4 Security Encryption Active
-            </p>
           </div>
         </div>
       )}

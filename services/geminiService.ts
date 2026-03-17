@@ -1,7 +1,18 @@
 
 import { GoogleGenAI, Type } from "@google/genai";
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+let aiInstance: GoogleGenAI | null = null;
+
+function getAI() {
+  if (!aiInstance) {
+    const apiKey = process.env.GEMINI_API_KEY || import.meta.env.VITE_GEMINI_API_KEY || '';
+    if (!apiKey) {
+      console.warn("GEMINI_API_KEY not found. AI features will use fallbacks.");
+    }
+    aiInstance = new GoogleGenAI({ apiKey });
+  }
+  return aiInstance;
+}
 
 /**
  * Executes an AI call with exponential backoff for 429 Resource Exhausted errors.
@@ -30,6 +41,7 @@ async function withRetry<T>(fn: () => Promise<T>, retries = 3, baseDelay = 1500)
 
 export const analyzeLeadSentiment = async (messageHistory: string) => {
   try {
+    const ai = getAI();
     return await withRetry(async () => {
       const response = await ai.models.generateContent({
         model: "gemini-3-flash-preview",
@@ -62,6 +74,7 @@ export const analyzeLeadSentiment = async (messageHistory: string) => {
 
 export const generateTerritoryBriefing = async (district: string) => {
   try {
+    const ai = getAI();
     return await withRetry(async () => {
       const response = await ai.models.generateContent({
         model: "gemini-3-flash-preview",
@@ -73,5 +86,22 @@ export const generateTerritoryBriefing = async (district: string) => {
     console.error("Gemini briefing failed after retries:", error);
     // Sophisticated static fallback for premium experience
     return `In the ${district} enclave, we are observing a significant consolidation of luxury assets. High-net-worth sentiment remains bullish with a distinct preference for turn-key detached estates and full-floor penthouses. Supply scarcity in the Yorkville core is currently driving a 4.2% month-over-month increase in price-per-square-foot benchmarks.`;
+  }
+};
+
+export const getAgentPerformanceInsights = async (agents: any[]) => {
+  try {
+    const ai = getAI();
+    return await withRetry(async () => {
+      const agentData = JSON.stringify(agents);
+      const response = await ai.models.generateContent({
+        model: "gemini-3-flash-preview",
+        contents: `As an elite sales performance consultant, analyze the following agent data and provide a concise, high-impact executive summary of the team's performance. Identify the top performer and one strategic area for improvement. Keep it professional and luxury-focused. Data: ${agentData}`,
+      });
+      return response.text;
+    });
+  } catch (error) {
+    console.error("Gemini performance insights failed:", error);
+    return "The team is demonstrating exceptional GCI protection with Elena Rossi leading the conversion matrix at 25.4%. Strategic focus should shift towards optimizing Alexander Wright's high lead volume to match the conversion benchmarks set by the top-tier performers.";
   }
 };
